@@ -1,0 +1,763 @@
+# 🛡️ PaySafe AI — India's Intelligent Payment Guardian
+
+> *"Ek AI jo aapke saath hota hai — har transaction mein, har fraud se pehle, har merchant ke growth mein."*
+
+Built for **Fin-O-Hack** | Paytm × ASSETS DTU Fintech Hackathon
+
+---
+
+## 📌 Table of Contents
+
+- [Problem Statement](#-problem-statement)
+- [Our Solution](#-our-solution)
+- [Features](#-features)
+- [System Architecture](#-system-architecture)
+- [Tech Stack](#-tech-stack)
+- [Project Structure](#-project-structure)
+- [Setup & Installation](#-setup--installation)
+- [API Reference](#-api-reference)
+- [Demo Scenarios](#-demo-scenarios)
+- [Dataset & Data Generation](#-dataset--data-generation)
+- [3-Day Build Plan](#-3-day-build-plan)
+- [Deployment](#-deployment)
+- [Team](#-team)
+
+---
+
+## 🎯 Problem Statement
+
+India processes **10+ billion UPI transactions monthly**, yet:
+
+- **₹2,000+ crore** lost to UPI fraud in 2023-24
+- **80%+ of fraud** happens via social engineering — users are *manipulated* into paying
+- **Kirana merchants** have zero analytics tools — running blind on pen & paper
+- **Semi-literate Bharat users** can't navigate complex dashboards or English interfaces
+
+**Existing systems detect fraud AFTER money moves. We stop it BEFORE.**
+
+---
+
+## 💡 Our Solution
+
+**PaySafe AI** is a multi-agent AI middleware layer for Paytm that:
+
+1. Catches scams **before** the user hits "Pay"
+2. Gives every receiver a **human-readable trust badge**
+3. Enables **voice payments in Hindi** with built-in safety
+4. Delivers **WhatsApp business insights** to merchants daily
+5. Protects merchants from **payment fraud** too
+
+---
+
+## 🧩 Features
+
+### 👤 USER SIDE — Guardian Angel for Every Payment
+
+---
+
+#### 🔴 Feature 1: Scam Shield (Pre-Payment AI)
+
+**The Problem:** Scammers call/text users with urgency ("bijli katne wali hai!") and manipulate them into paying. No existing system stops this.
+
+**What it does:** Before payment, user can paste a suspicious message/call context. AI analyzes it against known Indian scam patterns and warns in Hindi.
+
+**Scam Patterns Detected:**
+| Pattern | Example |
+|---|---|
+| Electricity Scam | "Bijli katne wali hai, abhi 1 rupee bhejo" |
+| KYC Scam | "Account band ho jaega, KYC update karo" |
+| Lottery Scam | "Aapne ₹10 lakh jeete, processing fee bhejo" |
+| Emergency Scam | "Beta hospital mein hai, paisa bhejo" |
+| Refund Scam | "Extra amount aa gaya, wapas karo" |
+| Fake Delivery | "COD payment QR scan karo" |
+
+**Output:**
+```
+⚠️ SCAM ALERT — 94% probability
+Yeh message electricity scam jaisa lagta hai.
+Paytm kabhi bhi is tarah payment nahi maangta.
+Kya aap sure hain aage badhna chahte hain?
+```
+
+---
+
+#### 🟡 Feature 2: QR DNA Scanner
+
+**What it does:** When user scans any QR code, AI instantly fingerprints it before payment executes.
+
+**Checks performed:**
+- UPI ID age (new account = suspicious)
+- Merchant name vs registered name mismatch
+- QR generation timestamp (< 7 days = flag)
+- User complaint history on this QR
+- GPS location vs merchant registered city
+
+**Output badges:**
+```
+🟢 Safe to Pay     — All checks passed
+🟡 Proceed Carefully — New account detected  
+🔴 DO NOT PAY      — Reported by other users
+```
+
+---
+
+#### 🔵 Feature 3: Live Trust Badge System
+
+**What it does:** Every receiver gets a dynamic, human-readable trust badge — not a confusing 0-100 number.
+
+**Scoring Model:**
+| Factor | Weight | Logic |
+|---|---|---|
+| Account Age | 20 | < 30 days = -30 points |
+| Transaction Consistency | 15 | Irregular spikes = -15 |
+| Dispute Rate | 20 | > 10% disputes = -25 |
+| Payment Spike | 15 | 10x normal volume = -20 |
+| Name Match | 10 | Mismatch = -10 |
+| User Reports | 20 | Each report = -10 |
+
+**Badges:**
+```
+🟢 Trusted Merchant   — Score 80–100, 2+ years, clean history
+🟡 New Account        — Score 60–79, less than 3 months old
+⚠️ Proceed Carefully  — Score 40–59, some red flags
+🔴 High Risk          — Score < 40, multiple complaints
+```
+
+---
+
+#### 🎙️ Feature 4: Voice Payment with Safety Net (Bharat Feature)
+
+**The Problem:** Semi-literate users in rural India can't type. Voice is their natural interface.
+
+**Flow:**
+```
+User speaks → Whisper transcribes → LLM parses intent 
+→ Trust check runs → AI responds in voice → User confirms → Payment
+```
+
+**Example:**
+```
+User says:    "Ramesh ko 500 bhejo vegetables ke liye"
+AI checks:    Ramesh's trust badge = 🟡 New Account (18 days old)
+AI responds:  "Ramesh ka account sirf 18 din purana hai. 
+               Kya aap sure hain 500 rupye bhejna chahte hain?"
+User says:    "Haan bhejo"
+AI:           "Payment complete. Ramesh ko ₹500 bheje gaye."
+```
+
+**Stack:** OpenAI Whisper (STT) → LLM intent parsing → gTTS / ElevenLabs (TTS)
+
+---
+
+### 🏪 MERCHANT SIDE — Free CA + Business Coach in Your Pocket
+
+---
+
+#### 📊 Feature 5: WhatsApp Business Intelligence
+
+**The Problem:** 90% of small merchants have no accounting software. They run on memory and paper.
+
+**What it does:** Every morning at 9 AM, merchant receives a WhatsApp message with full business summary — no app, no login, no English required.
+
+**Sample Message:**
+```
+📊 Ramesh Medical Store — Daily Report
+
+💰 Kal ka revenue: ₹14,200 (+12% vs last week)
+📦 Total transactions: 47
+👥 Repeat customers: 31 (66%)
+⏰ Peak time: 7–9 PM
+
+💡 Insight: Tuesday revenue usually drops 20%.
+   Kal discount offer karne se traffic badh sakta hai.
+
+⚠️ Alert: Aaj 3 unusually large transactions detected.
+   Apna account check karein.
+```
+
+**Implementation:** Twilio WhatsApp API + cron scheduler + LLM summary generation
+
+---
+
+#### 🎙️ Feature 6: Voice Business Assistant
+
+**What it does:** Merchant asks questions in Hindi by voice. AI fetches from DB and responds in voice + sends WhatsApp summary.
+
+**Example queries:**
+```
+"Is hafte kitna kamaaya?"        → Weekly revenue summary
+"Mere regular customers kaun hain?" → Top repeat customers
+"Peak time kab hai?"             → Hourly transaction heatmap
+"Pichle mahine se compare karo"  → Month-over-month analysis
+"Aaj kitne naye customer aaye?"  → New vs repeat breakdown
+```
+
+---
+
+#### 🚨 Feature 7: Merchant Anomaly Alerts
+
+**The Problem:** Merchants are also victims of fraud — fake screenshots, overpayment scams, forced refund scams.
+
+**Detects:**
+- Fake payment screenshot uploads (AI vision check)
+- Overpayment scam pattern ("maine galti se jyada bheja, wapas karo")
+- Unusual refund request spikes
+- Account takeover attempts
+- Transaction velocity anomalies
+
+**Alert sent to merchant:**
+```
+🚨 ALERT: Suspicious refund request detected
+Someone claimed to overpay ₹5,000 and is 
+asking for refund. This matches a known scam 
+pattern. Do NOT refund without verifying in 
+Paytm dashboard.
+```
+
+---
+
+## 🏗️ System Architecture
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                    USER / MERCHANT INPUT                 │
+│         (App UI / Voice / WhatsApp / QR Scan)           │
+└─────────────────────────┬───────────────────────────────┘
+                          │
+┌─────────────────────────▼───────────────────────────────┐
+│                   PAYSAFE AI LAYER                       │
+│                                                          │
+│  ┌─────────────┐  ┌──────────────┐  ┌───────────────┐  │
+│  │ Scam Shield │  │  QR Scanner  │  │ Voice Engine  │  │
+│  │  (LLM NLP)  │  │ (Rule+Redis) │  │(Whisper+gTTS) │  │
+│  └──────┬──────┘  └──────┬───────┘  └──────┬────────┘  │
+│         └────────────────┼─────────────────┘            │
+│                          │                               │
+│              ┌───────────▼──────────┐                   │
+│              │    TRUST ENGINE      │                   │
+│              │  (Scoring + Badges)  │                   │
+│              └───────────┬──────────┘                   │
+└──────────────────────────┼──────────────────────────────┘
+                           │
+┌──────────────────────────▼──────────────────────────────┐
+│                    DECISION LAYER                        │
+│              Allow / Warn / Block Payment                │
+└──────────────────────────┬──────────────────────────────┘
+                           │
+         ┌─────────────────┼─────────────────┐
+         │                 │                 │
+┌────────▼───────┐ ┌───────▼───────┐ ┌──────▼──────────┐
+│  PAYMENT GOES  │ │   MERCHANT    │ │    WHATSAPP     │
+│    THROUGH     │ │   INSIGHTS    │ │     ALERTS      │
+│  (or blocked)  │ │  (SQL + LLM)  │ │   (Twilio)      │
+└────────────────┘ └───────────────┘ └─────────────────┘
+```
+
+---
+
+## 🛠️ Tech Stack
+
+### Backend
+| Layer | Technology | Why |
+|---|---|---|
+| API Framework | FastAPI (Python) | Fastest to build, async support |
+| Database | SQLite (dev) / Supabase (prod) | Zero setup for hackathon |
+| Cache / Feature Store | Redis | Fast trust score lookups |
+| Task Queue | Celery | Scheduled WhatsApp reports |
+
+### AI / ML
+| Component | Technology | Why |
+|---|---|---|
+| LLM (Scam Shield, Insights) | Claude API / GPT-4o | Best reasoning in Hindi |
+| Speech-to-Text | OpenAI Whisper | Free, local, Hindi support |
+| Text-to-Speech | gTTS / ElevenLabs | Free tier sufficient |
+| Agent Orchestration | LangGraph | Multi-agent coordination |
+
+### Integrations
+| Service | Technology | Purpose |
+|---|---|---|
+| WhatsApp | Twilio Sandbox (free) | Merchant reports + alerts |
+| Voice | FastAPI endpoint | Voice payment flow |
+| Payment Mock | Internal mock | Simulated UPI (hackathon scope) |
+
+### Frontend
+| Layer | Technology |
+|---|---|
+| Demo UI | React.js (Vite) |
+| Styling | Tailwind CSS |
+| API calls | Axios |
+
+---
+
+## 📁 Project Structure
+
+```
+paysafe-ai/
+│
+├── backend/
+│   ├── main.py                    # FastAPI app entry point
+│   ├── database.py                # DB setup + models
+│   ├── synthetic_data.py          # Generate fake transaction data
+│   ├── config.py                  # API keys, env variables
+│   │
+│   ├── services/
+│   │   ├── scam_shield.py         # LLM-based scam detection
+│   │   ├── trust_score.py         # Rule-based trust scoring
+│   │   ├── qr_scanner.py          # QR code analysis
+│   │   ├── voice.py               # Whisper STT + gTTS TTS
+│   │   ├── merchant_insights.py   # SQL analytics + LLM summary
+│   │   ├── whatsapp.py            # Twilio WhatsApp integration
+│   │   └── anomaly_detector.py    # Merchant fraud protection
+│   │
+│   ├── routes/
+│   │   ├── user_routes.py         # /scam, /trust, /voice, /qr
+│   │   └── merchant_routes.py     # /insights, /alerts, /voice-query
+│   │
+│   └── data/
+│       ├── scam_patterns.json     # Known Indian scam scripts
+│       └── sample_transactions.json # Pre-generated demo data
+│
+├── frontend/
+│   ├── src/
+│   │   ├── App.jsx
+│   │   ├── components/
+│   │   │   ├── ScamShield.jsx     # Paste message → get warning
+│   │   │   ├── TrustBadge.jsx     # Enter UPI ID → see badge
+│   │   │   ├── VoicePayment.jsx   # Voice recording + response
+│   │   │   └── MerchantDashboard.jsx
+│   │   └── api/
+│   │       └── client.js
+│   └── package.json
+│
+├── demo/
+│   ├── scenarios.md               # Step-by-step demo scripts
+│   ├── sample_scam_messages.txt   # Pre-loaded scam examples
+│   └── postman_collection.json    # API demo without frontend
+│
+├── .env.example                   # Environment variables template
+├── requirements.txt               # Python dependencies
+├── docker-compose.yml             # One-command setup
+└── README.md
+```
+
+---
+
+## ⚙️ Setup & Installation
+
+### Prerequisites
+- Python 3.10+
+- Node.js 18+
+- Redis (or use Docker)
+- API Keys: OpenAI / Anthropic Claude, Twilio
+
+### Step 1: Clone & Configure
+```bash
+git clone https://github.com/your-team/paysafe-ai
+cd paysafe-ai
+
+# Copy env template
+cp .env.example .env
+
+# Fill in your API keys in .env
+OPENAI_API_KEY=your_key_here          # or ANTHROPIC_API_KEY
+TWILIO_ACCOUNT_SID=your_sid_here
+TWILIO_AUTH_TOKEN=your_token_here
+TWILIO_WHATSAPP_FROM=whatsapp:+14155238886
+```
+
+### Step 2: Backend Setup
+```bash
+cd backend
+
+# Create virtual environment
+python -m venv venv
+source venv/bin/activate          # Windows: venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Generate synthetic data
+python synthetic_data.py
+
+# Start the server
+uvicorn main:app --reload --port 8000
+```
+
+### Step 3: Frontend Setup
+```bash
+cd frontend
+npm install
+npm run dev
+# Runs at http://localhost:5173
+```
+
+### Step 4: Redis (for trust score caching)
+```bash
+# Using Docker (easiest)
+docker run -d -p 6379:6379 redis:alpine
+
+# Or install locally
+# Ubuntu: sudo apt install redis-server
+# Mac: brew install redis
+```
+
+### Step 5: Verify Everything Works
+```bash
+# Test Scam Shield
+curl -X POST http://localhost:8000/scam/check \
+  -H "Content-Type: application/json" \
+  -d '{"message": "bijli katne wali hai abhi 1 rupee bhejo"}'
+
+# Test Trust Badge
+curl http://localhost:8000/trust/rahul@paytm
+
+# Trigger WhatsApp Report (test merchant)
+curl -X POST http://localhost:8000/merchant/send-report \
+  -d '{"merchant_id": "demo_merchant_001"}'
+```
+
+---
+
+## 📡 API Reference
+
+### 🔐 User APIs
+
+#### Check Scam Shield
+```
+POST /scam/check
+Content-Type: application/json
+
+{
+  "message": "suspicious message text here",
+  "payment_context": {
+    "amount": 1,
+    "receiver_upi": "xyz@paytm"
+  }
+}
+
+Response:
+{
+  "is_scam": true,
+  "confidence": 94,
+  "scam_type": "electricity_scam",
+  "warning_hindi": "Yeh electricity scam jaisa lagta hai...",
+  "recommendation": "DO_NOT_PAY"
+}
+```
+
+#### Get Trust Badge
+```
+GET /trust/{upi_id}
+
+Response:
+{
+  "upi_id": "rahul@paytm",
+  "trust_score": 72,
+  "badge": "🟡 New Account",
+  "badge_color": "yellow",
+  "account_age_days": 18,
+  "flags": ["new_account", "no_dispute_history"],
+  "explanation": "Yeh account sirf 18 din purana hai"
+}
+```
+
+#### Scan QR Code
+```
+POST /qr/scan
+Content-Type: application/json
+
+{
+  "qr_data": "upi://pay?pa=shop@paytm&pn=ShopName&am=500",
+  "user_location": {"lat": 28.6139, "lng": 77.2090}
+}
+
+Response:
+{
+  "is_safe": false,
+  "risk_level": "HIGH",
+  "badge": "🔴 DO NOT PAY",
+  "reasons": ["QR generated 2 days ago", "Name mismatch detected"],
+  "explanation_hindi": "Is QR mein kuch gadbad hai..."
+}
+```
+
+#### Voice Payment
+```
+POST /voice/pay
+Content-Type: multipart/form-data
+
+audio_file: [WAV/MP3 file]
+
+Response:
+{
+  "transcribed": "Rahul ko 500 bhejo",
+  "parsed_intent": {
+    "receiver": "Rahul",
+    "amount": 500,
+    "purpose": null
+  },
+  "trust_check": {
+    "badge": "🟡 New Account",
+    "warning": true
+  },
+  "voice_response_url": "/audio/response_123.mp3",
+  "requires_confirmation": true
+}
+```
+
+---
+
+### 🏪 Merchant APIs
+
+#### Get Merchant Insights
+```
+GET /merchant/insights?merchant_id=demo_001&period=week
+
+Response:
+{
+  "revenue": {
+    "today": 14200,
+    "yesterday": 12680,
+    "this_week": 89400,
+    "change_pct": 12.0
+  },
+  "peak_hours": ["19:00-21:00"],
+  "top_customers": [...],
+  "llm_insight": "Aapki sales 12% badhi hai is hafte...",
+  "recommendations": ["Tuesday discount offer karo"]
+}
+```
+
+#### Voice Business Query
+```
+POST /merchant/voice-query
+Content-Type: multipart/form-data
+
+merchant_id: demo_001
+audio_file: [WAV file]
+
+Response:
+{
+  "query_text": "Aaj kitna kamaaya?",
+  "answer_text": "Aaj aapne 14,200 rupye kamaaye",
+  "voice_response_url": "/audio/merchant_response.mp3"
+}
+```
+
+#### Send WhatsApp Report
+```
+POST /merchant/send-report
+{
+  "merchant_id": "demo_001",
+  "phone": "+919876543210"
+}
+
+Response:
+{
+  "status": "sent",
+  "whatsapp_message_id": "SM...",
+  "report_summary": "Daily report sent to +91987..."
+}
+```
+
+---
+
+## 🎬 Demo Scenarios
+
+### Scenario 1: Sunita gets scammed (User Protection)
+```
+1. Open app → "Check a suspicious message"
+2. Paste: "Bijli department se baat kar raha hoon.
+          Aapka connection aaj raat band hoga.
+          Abhi 1 rupee bhejo verify karne ke liye."
+3. DEMO MOMENT: AI shows ⚠️ 94% SCAM ALERT in Hindi
+4. User clicks "I'm safe, thanks"
+```
+
+### Scenario 2: Voice payment with trust check
+```
+1. Click microphone button
+2. Say: "Ek naye dukan wale ko 2000 bhejo"
+3. DEMO MOMENT: AI says in voice — "Yeh account 3 din 
+   purana hai. Kya aap sure hain?"
+4. Say "Haan" → payment confirmed
+```
+
+### Scenario 3: Merchant Ramesh's morning report
+```
+1. Open WhatsApp on demo phone
+2. Click "Send Report" button in dashboard
+3. DEMO MOMENT: WhatsApp message arrives LIVE on stage
+   with full Hindi business summary
+```
+
+### Scenario 4: Merchant voice query
+```
+1. Click merchant mic button
+2. Say: "Is hafte kitna kamaaya?"
+3. DEMO MOMENT: AI responds in Hindi voice with 
+   weekly revenue and comparison
+```
+
+---
+
+## 📊 Dataset & Data Generation
+
+**No real Paytm data is used or needed.** All data is synthetically generated.
+
+### Auto-generate on first run:
+```bash
+python backend/synthetic_data.py
+```
+
+This creates:
+- `1000 transactions` across 50 merchants, 200 users
+- `Realistic Indian names` (using Faker `en_IN` locale)
+- `5% fraud rate` with known scam patterns
+- `UPI IDs` in format `name@paytm`
+- `Merchant categories`: kirana, medical, restaurant, auto, vegetables
+- `Time distributions`: realistic peak hours (7-9 PM more transactions)
+
+### Scam database (hardcoded, no ML training needed):
+Located at `backend/data/scam_patterns.json` — 50+ known Indian scam scripts in Hindi and English.
+
+### ML Models Used:
+| Feature | Model Type | Training Needed? |
+|---|---|---|
+| Scam Shield | LLM prompt (Claude/GPT) | ❌ No — zero-shot |
+| Trust Badge | Rule-based scoring | ❌ No — pure logic |
+| QR Scanner | Rule-based + Redis | ❌ No — pure logic |
+| Voice STT | Whisper (pretrained) | ❌ No — pretrained |
+| Merchant Insights | SQL + LLM summary | ❌ No — SQL + prompts |
+| Anomaly Detection | Statistical rules | ❌ No — thresholds |
+
+**Bottom line: Zero ML training required for hackathon demo.**
+
+---
+
+## 📅 3-Day Build Plan
+
+### Day 1 (6–8 hours) — Core Backend
+```
+✅ Hour 1-2: Project setup, FastAPI boilerplate, SQLite DB
+✅ Hour 3:   Synthetic data generation script
+✅ Hour 4:   Trust Score API (rule-based, works offline)
+✅ Hour 5:   Scam Shield API (LLM integration)
+✅ Hour 6:   QR Scanner API (rule-based)
+✅ Hour 7:   Merchant SQL analytics queries
+✅ Hour 8:   LLM summary for merchant insights
+```
+
+### Day 2 (6–8 hours) — Voice + WhatsApp + Frontend
+```
+✅ Hour 1-2: Whisper STT integration + gTTS response
+✅ Hour 3:   Voice payment full flow (parse → check → confirm)
+✅ Hour 4:   Twilio WhatsApp sandbox setup
+✅ Hour 5:   Hindi WhatsApp message templates
+✅ Hour 6:   Cron scheduler for daily reports
+✅ Hour 7:   React frontend — Scam Shield UI
+✅ Hour 8:   React frontend — Trust Badge + Merchant Dashboard
+```
+
+### Day 3 (4–6 hours) — Polish + Deploy + Demo Prep
+```
+✅ Hour 1:   Bug fixes + error handling
+✅ Hour 2:   Deploy backend to Railway.app
+✅ Hour 3:   Deploy frontend to Vercel
+✅ Hour 4:   Record demo video (backup)
+✅ Hour 5:   Rehearse 4 demo scenarios
+✅ Hour 6:   Final testing on live deployment
+```
+
+---
+
+## 🚀 Deployment
+
+### Backend (Railway.app — Free)
+```bash
+# Install Railway CLI
+npm install -g @railway/cli
+
+# Login and deploy
+railway login
+railway init
+railway up
+
+# Set environment variables in Railway dashboard
+# Add: OPENAI_API_KEY, TWILIO_ACCOUNT_SID, etc.
+```
+
+### Frontend (Vercel — Free)
+```bash
+cd frontend
+npx vercel
+
+# Set VITE_API_URL to your Railway backend URL
+```
+
+### Database (Supabase — Free Tier)
+```bash
+# Replace SQLite with Supabase PostgreSQL for production
+# Connection string goes in .env as DATABASE_URL
+```
+
+---
+
+## 💰 Cost Estimate (Entire Hackathon)
+
+| Service | Free Tier | Estimated Usage |
+|---|---|---|
+| OpenAI API | $5 credit | ~200 demo calls = $1 |
+| Anthropic Claude | $5 credit | ~200 demo calls = $1 |
+| Twilio WhatsApp | 1000 free messages | ~20 for demo |
+| Railway | $5 free | Backend hosting |
+| Vercel | Unlimited free | Frontend hosting |
+| Supabase | 500MB free | DB storage |
+| Whisper | Completely free | Local STT |
+
+**Total estimated cost: ₹0–200**
+
+---
+
+## ⚠️ Hackathon Scope & Constraints
+
+- Mock payment execution (no real UPI integration)
+- Simulated transaction data (no real Paytm DB access)
+- Simplified fraud rules (production would use graph ML)
+- Twilio sandbox for WhatsApp (not production API)
+- Voice works best in quiet environment for demo
+
+---
+
+## 🔮 Future Scope (Post-Hackathon)
+
+- Graph Neural Networks for fraud detection across UPI network
+- Cross-platform trust scoring (works across all payment apps)
+- Personalized merchant offers engine
+- Regional language support (Tamil, Telugu, Bengali, Marathi)
+- Real-time transaction stream processing (Kafka)
+- Federated learning for privacy-preserving fraud models
+
+---
+
+## 👥 Team
+
+Built for **Fin-O-Hack** — Paytm × ASSETS DTU Fintech Hackathon 2026
+
+| Role | Focus |
+|---|---|
+| Backend Lead | FastAPI, LLM integration, APIs |
+| AI/ML Lead | Scam detection, trust scoring, voice |
+| Frontend Lead | React UI, demo flow |
+| Product Lead | Story, slides, presentation |
+
+---
+
+## 📞 Contact Organizers
+
+- Hayyaan: 9560515054
+- Aahant: 8368830075
+
+---
+
+*PaySafe AI — Transforming blind transactions into an intelligent, trusted ecosystem.*

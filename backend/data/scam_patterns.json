@@ -1,0 +1,170 @@
+[
+    {
+        "type": "electricity_scam",
+        "keywords": ["bijli", "katne", "connection", "raat", "kat", "electricity", "bill", "disconnect", "meter"],
+        "urgency": "high",
+        "example_hindi": "Bijli department se bol raha hoon, aapka connection aaj raat band hoga. Abhi 1 rupee bhejo verify karne ke liye.",
+        "description": "Electricity bill disconnection scam",
+        "warning_hindi": "⚠️ Yeh bijli department scam hai. Koi bhi sarkari vibhag aapse UPI se payment nahi maangta."
+    },
+    {
+        "type": "kyc_scam",
+        "keywords": ["kyc", "update", "account", "block", "band", "link", "verify", "aadhaar", "pan", "expire"],
+        "urgency": "high",
+        "example_hindi": "Aapka Paytm KYC expire ho gaya hai. Abhi is link pe click karke update karein warna account band ho jaega.",
+        "description": "KYC update / account block scam",
+        "warning_hindi": "⚠️ Paytm kabhi bhi KYC ke liye link ya payment nahi maangta. App se hi update karein."
+    },
+    {
+        "type": "lottery_scam",
+        "keywords": ["jeete", "lakh", "processing", "fee", "lottery", "prize", "winner", "crore", "congratulations", "jeet"],
+        "urgency": "medium",
+        "example_hindi": "Badhai ho! Aapne KBC mein ₹25 lakh jeete hain. Processing fee ke taur par ₹5000 bhejein.",
+        "description": "Lottery / KBC winnings scam",
+        "warning_hindi": "⚠️ Koi bhi lottery bina ticket liye nahi milti. Yeh 100% scam hai."
+    },
+    {
+        "type": "emergency_scam",
+        "keywords": ["hospital", "accident", "emergency", "paisa", "madad", "beta", "bimar", "serious", "jaldi", "turant"],
+        "urgency": "high",
+        "example_hindi": "Aapka beta hospital mein hai, serious condition hai. Jaldi ₹10,000 bhejo treatment ke liye.",
+        "description": "Family emergency / hospital scam",
+        "warning_hindi": "⚠️ Pehle phone karke apne parivaar se confirm karein. Scammers emergency ka darr dikhate hain."
+    },
+    {
+        "type": "refund_scam",
+        "keywords": ["extra", "amount", "refund", "wapas", "galti", "mistake", "overpaid", "return", "zyada"],
+        "urgency": "medium",
+        "example_hindi": "Maine galti se aapko ₹5000 extra bhej diya hai. Please wapas kar do.",
+        "description": "Overpayment refund scam",
+        "warning_hindi": "⚠️ Pehle apna bank balance check karein. Aksar koi paisa aaya hi nahi hota."
+    },
+    {
+        "type": "fake_delivery",
+        "keywords": ["delivery", "cod", "qr", "parcel", "courier", "package", "amazon", "flipkart", "order"],
+        "urgency": "medium",
+        "example_hindi": "Aapka courier delivery ke liye ₹2 ka COD payment QR scan karein.",
+        "description": "Fake delivery / COD scam",
+        "warning_hindi": "⚠️ Genuine delivery services kabhi QR scan nahi karate. Delivery boy ko cash dijiye."
+    },
+    {
+        "type": "otp_scam",
+        "keywords": ["otp", "code", "share", "batao", "number", "verification", "enter", "sms"],
+        "urgency": "critical",
+        "example_hindi": "Aapke phone pe ek OTP aaya hoga, please mujhe bata dijiye verification ke liye.",
+        "description": "OTP sharing scam",
+        "warning_hindi": "🚨 OTP KABHI KISI KO MAT BATAO! Bank, Paytm, ya koi bhi company OTP nahi maangti."
+    },
+    {
+        "type": "investment_scam",
+        "keywords": ["invest", "return", "double", "crypto", "bitcoin", "trading", "guaranteed", "profit", "scheme", "paisa lagao"],
+        "urgency": "high",
+        "example_hindi": "Humari scheme mein ₹10,000 lagao, 1 hafte mein ₹50,000 guaranteed milega.",
+        "description": "Investment / crypto fraud scam",
+        "warning_hindi": "⚠️ Guaranteed returns wali koi scheme nahi hoti. Yeh Ponzi/fraud scheme hai."
+    },
+    {
+        "type": "job_scam",
+        "keywords": ["job", "naukri", "vacancy", "hiring", "registration", "fee", "work from home", "salary", "monthly income"],
+        "urgency": "medium",
+        "example_hindi": "Work from home job hai, ₹50,000 monthly salary. Registration fee sirf ₹2000.",
+        "description": "Fake job offer scam",
+        "warning_hindi": "⚠️ Asli company kabhi registration fee nahi leti. Yeh fake job scam hai."
+    },
+    {
+        "type": "loan_scam",
+        "keywords": ["loan", "approved", "sanction", "processing", "disbursement", "credit", "emi", "interest", "karza"],
+        "urgency": "medium",
+        "example_hindi": "Aapka ₹5 lakh personal loan approved hai. Processing fee ₹3000 bhejein.",
+        "description": "Fake loan approval scam",
+        "warning_hindi": "⚠️ Banks pehle se processing fee nahi maangte. Scam alert!"
+    },
+    {
+        "type": "insurance_scam",
+        "keywords": ["insurance", "bima", "policy", "claim", "maturity", "bonus", "lic", "premium"],
+        "urgency": "medium",
+        "example_hindi": "Aapki LIC policy mature ho gayi hai. ₹2 lakh claim karne ke liye ₹5000 bhejein.",
+        "description": "Insurance maturity claim scam",
+        "warning_hindi": "⚠️ LIC ya koi bhi insurance company claim ke liye advance payment nahi maangti."
+    },
+    {
+        "type": "rbi_impersonation",
+        "keywords": ["rbi", "reserve bank", "government", "sarkar", "compliance", "dikkat", "freeze", "seize"],
+        "urgency": "critical",
+        "example_hindi": "RBI se bol rahe hain, aapka account freeze hone wala hai. Verify karne ke liye ₹1 bhejein.",
+        "description": "RBI / Government impersonation scam",
+        "warning_hindi": "🚨 RBI kabhi phone karke paisa nahi maangti! Yeh impersonation scam hai."
+    },
+    {
+        "type": "police_threat",
+        "keywords": ["police", "arrest", "warrant", "case", "fir", "cyber crime", "jail", "giraftar", "thana"],
+        "urgency": "critical",
+        "example_hindi": "Aapke naam pe FIR darj hai. Arrest se bachne ke liye settlement amount ₹25,000 bhejein.",
+        "description": "Police / arrest threat scam",
+        "warning_hindi": "🚨 Police phone pe paisa nahi maangti! Panic mat karein, yeh digital arrest scam hai."
+    },
+    {
+        "type": "tech_support_scam",
+        "keywords": ["anydesk", "teamviewer", "remote", "screen share", "download", "install", "app", "fix", "problem"],
+        "urgency": "critical",
+        "example_hindi": "AnyDesk download karein, hum aapka phone fix kar denge remotely.",
+        "description": "Remote access / tech support scam",
+        "warning_hindi": "🚨 KISI KO BHI REMOTE ACCESS MAT DO! AnyDesk/TeamViewer se wo aapka pura phone control kar lenge."
+    },
+    {
+        "type": "cashback_scam",
+        "keywords": ["cashback", "reward", "offer", "scratch card", "lucky", "spin", "claim", "redeem"],
+        "urgency": "low",
+        "example_hindi": "₹500 cashback claim karne ke liye is link pe click karein aur ₹10 bhejein.",
+        "description": "Fake cashback / rewards scam",
+        "warning_hindi": "⚠️ Cashback pane ke liye paisa bhejne ki zaroorat nahi hoti. Scam hai."
+    },
+    {
+        "type": "sim_swap_scam",
+        "keywords": ["sim", "port", "swap", "network", "signal", "airtel", "jio", "vodafone", "telecom"],
+        "urgency": "critical",
+        "example_hindi": "Aapki SIM upgrade honi hai, apna Aadhaar number aur OTP bhejein.",
+        "description": "SIM swap / port scam",
+        "warning_hindi": "🚨 Telecom company kabhi Aadhaar ya OTP phone pe nahi maangti. SIM swap se account khali ho sakta hai."
+    },
+    {
+        "type": "income_tax_scam",
+        "keywords": ["income tax", "itr", "tax refund", "notice", "penalty", "tax department", "assessment"],
+        "urgency": "high",
+        "example_hindi": "Income Tax Department: Aapka ₹15,000 refund pending hai. Claim karne ke liye link click karein.",
+        "description": "Income tax refund / notice scam",
+        "warning_hindi": "⚠️ IT Department sirf official portal se communicate karti hai, SMS links se nahi."
+    },
+    {
+        "type": "custom_duty_scam",
+        "keywords": ["customs", "duty", "parcel", "stuck", "international", "import", "clearance", "airport"],
+        "urgency": "medium",
+        "example_hindi": "Aapka international parcel customs mein atka hai. ₹8000 duty bhejein release ke liye.",
+        "description": "Custom duty / international parcel scam",
+        "warning_hindi": "⚠️ Customs kabhi UPI se duty nahi maangti. Official portal pe verify karein."
+    },
+    {
+        "type": "whatsapp_forward_scam",
+        "keywords": ["forward", "share", "viral", "whatsapp", "free", "recharge", "data", "gb"],
+        "urgency": "low",
+        "example_hindi": "Jio de raha hai 100GB free data! Is link ko 10 groups mein share karein.",
+        "description": "WhatsApp viral forward scam",
+        "warning_hindi": "⚠️ WhatsApp forwards 99% fake hote hain. Link click mat karein."
+    },
+    {
+        "type": "romance_scam",
+        "keywords": ["love", "pyaar", "gift", "abroad", "visa", "ticket", "foreign", "relationship", "darling"],
+        "urgency": "medium",
+        "example_hindi": "Main tumse milne aa raha hoon India. Mera gift customs mein atka hai, ₹15,000 bhejo.",
+        "description": "Romance / relationship scam",
+        "warning_hindi": "⚠️ Online pyaar mein paisa maangne wale 100% scammer hain."
+    },
+    {
+        "type": "fake_upi_app",
+        "keywords": ["payment proof", "screenshot", "paid", "check", "confirm", "received", "success"],
+        "urgency": "high",
+        "example_hindi": "Maine payment kar diya hai, screenshot dekho. Ab mera order de do.",
+        "description": "Fake UPI payment screenshot scam",
+        "warning_hindi": "⚠️ Screenshot fake ho sakta hai! Paytm app mein jaake apna balance confirm karein."
+    }
+]

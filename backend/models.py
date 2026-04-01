@@ -11,6 +11,9 @@ class User(Base):
     created_at = Column(DateTime(timezone=True), default=func.now())
     is_merchant = Column(Boolean, default=False)
     has_disputes = Column(Boolean, default=False)
+    dispute_count = Column(Integer, default=0)  # Number of disputes/chargebacks
+    total_transaction_count = Column(Integer, default=0)  # Total transactions as receiver
+    complaint_count = Column(Integer, default=0)  # User complaints/reports
 
 class Merchant(Base):
     __tablename__ = "merchants"

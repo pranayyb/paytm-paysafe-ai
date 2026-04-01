@@ -6,13 +6,13 @@ from models import User, Merchant, Transaction
 
 def calculate_trust_score(db: Session, upi_id: str):
     """
-    Weighted trust score matching README specification:
+    Improved weighted trust score matching README specification:
     - Account Age: 20%
     - Transaction Consistency: 15%
-    - Dispute Rate: 20%
-    - Payment Spike: 15%
+    - Dispute Rate: 20% (percentage-based)
+    - Payment Spike: 15% (volume & amount spikes)
     - Name Match: 10%
-    - User Reports: 20%
+    - User Reports: 20% (applies to all users)
     """
     user = db.query(User).filter(User.upi_id == upi_id).first()
 
@@ -52,7 +52,7 @@ def calculate_trust_score(db: Session, upi_id: str):
     factors["account_age"] = {"score": age_score, "max": 20, "detail": f"{age_days} days old"}
 
     # ──── 2. Transaction Consistency (15 points) ────
-    # Check if transaction pattern is regular (not erratic spikes)
+    # Check for irregular transaction frequency spikes
     last_30_txs = db.query(Transaction).filter(
         Transaction.receiver_upi_id == upi_id,
         Transaction.timestamp >= now - timedelta(days=30)
@@ -63,12 +63,14 @@ def calculate_trust_score(db: Session, upi_id: str):
     if len(last_30_txs) > 0:
         avg_daily_30 = len(last_30_txs) / 30
         avg_daily_7 = len(last_7_txs) / 7
-        # Spike ratio: if recent week is 3x+ the monthly average, it's suspicious
+        
+        # Calculate spike ratio: how much higher is recent week compared to monthly average?
         if avg_daily_30 > 0:
             spike_ratio = avg_daily_7 / avg_daily_30
         else:
             spike_ratio = 1.0
 
+        # Thresholds per spec (irregular spikes = -15)
         if spike_ratio <= 1.5:
             consistency_score = 15
         elif spike_ratio <= 2.5:
@@ -84,59 +86,86 @@ def calculate_trust_score(db: Session, upi_id: str):
     factors["consistency"] = {"score": consistency_score, "max": 15, "detail": f"{len(last_30_txs)} txns in 30 days"}
 
     # ──── 3. Dispute Rate (20 points) ────
-    if user.has_disputes:
-        dispute_score = 0
-        flags.append("has_disputes")
+    # Calculate actual dispute percentage (spec: >10% disputes = -25 / full deduction)
+    if user.total_transaction_count and user.total_transaction_count > 0:
+        dispute_percentage = (user.dispute_count / user.total_transaction_count) * 100
+        
+        if dispute_percentage > 10:
+            dispute_score = 0  # >10% disputes = full deduction
+            flags.append("high_dispute_rate")
+        elif dispute_percentage > 5:
+            dispute_score = 10  # 5-10% = partial deduction
+            flags.append("moderate_dispute_rate")
+        else:
+            dispute_score = 20  # <5% = clean
     else:
-        dispute_score = 20
-    factors["disputes"] = {"score": dispute_score, "max": 20, "detail": "Has disputes" if user.has_disputes else "Clean"}
+        # No transaction history, treat as neutral
+        dispute_score = 15
+    
+    factors["disputes"] = {
+        "score": dispute_score,
+        "max": 20,
+        "detail": f"{user.dispute_count} disputes" if user.total_transaction_count > 0 else "No transaction history"
+    }
 
     # ──── 4. Payment Spike Detection (15 points) ────
-    # Large single transactions compared to average
+    # Detect both transaction volume spikes and abnormal amount spikes
+    spike_score = 15
     if last_30_txs:
         amounts = [tx.amount for tx in last_30_txs]
         avg_amount = sum(amounts) / len(amounts)
         max_amount = max(amounts)
+        
+        # Amount spike: individual transaction >= 10x average (spec: 10x normal = -20)
         if avg_amount > 0 and max_amount > avg_amount * 10:
             spike_score = 0
             flags.append("amount_spike")
         elif avg_amount > 0 and max_amount > avg_amount * 5:
             spike_score = 8
-            flags.append("moderate_spike")
+            flags.append("moderate_amount_spike")
         else:
             spike_score = 15
     else:
-        spike_score = 10
-    factors["payment_spike"] = {"score": spike_score, "max": 15, "detail": f"Max: ₹{max_amount:.0f}" if last_30_txs else "No data"}
+        spike_score = 10  # No transaction data
+    
+    factors["payment_spike"] = {
+        "score": spike_score,
+        "max": 15,
+        "detail": f"Max: ₹{max(amounts):.0f}, Avg: ₹{avg_amount:.0f}" if last_30_txs else "No data"
+    }
 
     # ──── 5. Name Match (10 points) ────
-    # Check if the User name matches the Merchant name (if merchant)
-    name_score = 10  # Default: no mismatch detected
+    # Check if User name matches Merchant name (if merchant)
+    name_score = 10
     if user.is_merchant:
         merchant = db.query(Merchant).filter(Merchant.upi_id == upi_id).first()
         if merchant and merchant.name and user.name:
             if merchant.name.lower() != user.name.lower():
                 name_score = 5  # Partial mismatch
                 flags.append("name_mismatch")
-    factors["name_match"] = {"score": name_score, "max": 10}
+    factors["name_match"] = {"score": name_score, "max": 10, "detail": "Match OK" if name_score == 10 else "Mismatch detected"}
 
     # ──── 6. User Reports / Complaints (20 points) ────
-    complaint_score = 20
+    # Now applies to ALL users, not just merchants (spec: Each report = -10)
+    complaint_count = user.complaint_count if hasattr(user, 'complaint_count') else 0
     if user.is_merchant:
         merchant = db.query(Merchant).filter(Merchant.upi_id == upi_id).first()
         if merchant:
-            complaints = merchant.complaint_count
-            deduction = min(20, complaints * 10)
-            complaint_score = max(0, 20 - deduction)
-            if complaints > 0:
-                flags.append("user_reports")
-    factors["reports"] = {"score": complaint_score, "max": 20}
+            complaint_count = max(complaint_count, merchant.complaint_count)
+    
+    deduction = min(20, complaint_count * 10)  # Each complaint = 10 point deduction, max 20
+    complaint_score = max(0, 20 - deduction)
+    
+    if complaint_count > 0:
+        flags.append("user_reports")
+    
+    factors["reports"] = {"score": complaint_score, "max": 20, "detail": f"{complaint_count} complaints" if complaint_count > 0 else "No complaints"}
 
-    # ──── Final Score ────
+    # ──── Final Score (100-point scale) ────
     total_score = age_score + consistency_score + dispute_score + spike_score + name_score + complaint_score
     total_score = max(0, min(100, total_score))
 
-    # Assign Badge
+    # Assign Badge (per README spec)
     if total_score >= 80:
         badge = "🟢 Trusted Merchant" if user.is_merchant else "🟢 Trusted User"
         color = "green"

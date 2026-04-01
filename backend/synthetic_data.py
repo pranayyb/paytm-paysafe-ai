@@ -70,13 +70,18 @@ def generate_data():
         name = f"{first} {last}"
         created_at = datetime(2025, 1, 1) + timedelta(days=random.randint(0, 300))
         has_disputes = random.choice([True, False]) if random.random() < 0.1 else False
+        dispute_count = random.randint(0, 3) if has_disputes else 0
+        complaint_count = random.randint(0, 2)
         
         user = User(
             upi_id=upi_id,
             name=name,
             created_at=created_at,
             is_merchant=False,
-            has_disputes=has_disputes
+            has_disputes=has_disputes,
+            dispute_count=dispute_count,
+            total_transaction_count=0,  # Will be updated after transaction generation
+            complaint_count=complaint_count
         )
         users.append(user)
         db.add(user)
@@ -87,7 +92,9 @@ def generate_data():
             "name": name,
             "created_at": created_at.isoformat(),
             "is_merchant": False,
-            "has_disputes": has_disputes
+            "has_disputes": has_disputes,
+            "dispute_count": dispute_count,
+            "complaint_count": complaint_count
         })
 
     # ─── Generate Merchants ───
@@ -129,7 +136,10 @@ def generate_data():
             name=name,
             created_at=created_at,
             is_merchant=True,
-            has_disputes=(complaint_count > 0)
+            has_disputes=(complaint_count > 0),
+            dispute_count=random.randint(0, 2) if complaint_count > 0 else 0,
+            total_transaction_count=0,  # Will be updated after transaction generation
+            complaint_count=complaint_count
         )
         db.add(user_merch)
         
@@ -190,6 +200,21 @@ def generate_data():
             "fraud_pattern": fraud_pattern
         })
 
+    db.commit()
+
+    # ─── Update Transaction Counts ───
+    # Calculate total_transaction_count for each user based on how many transactions they received
+    from sqlalchemy import func as sql_func
+    receiver_counts = db.query(
+        Transaction.receiver_upi_id,
+        sql_func.count(Transaction.id).label('count')
+    ).group_by(Transaction.receiver_upi_id).all()
+    
+    for receiver_upi_id, count in receiver_counts:
+        user = db.query(User).filter(User.upi_id == receiver_upi_id).first()
+        if user:
+            user.total_transaction_count = count
+    
     db.commit()
 
     # ─── Export JSON Files ───

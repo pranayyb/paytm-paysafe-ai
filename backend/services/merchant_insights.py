@@ -3,13 +3,178 @@ from collections import Counter, defaultdict
 from sqlalchemy.orm import Session
 from sqlalchemy import func as sql_func
 from models import Transaction, Merchant, User
+import statistics
+from pytz import timezone as tz
+
+
+# ─── Fraud & Risk Analysis ───
+def _calculate_fraud_score(db: Session, merchant_upi_id: str, transactions: list) -> dict:
+    """Analyze fraudulent transactions and calculate fraud risk score."""
+    fraud_txs = [tx for tx in transactions if tx.is_fraud]
+    fraud_rate = (len(fraud_txs) / len(transactions) * 100) if transactions else 0
+    
+    # Import LLM analysis if needed
+    fraud_patterns = defaultdict(int)
+    for tx in fraud_txs:
+        if tx.fraud_pattern:
+            fraud_patterns[tx.fraud_pattern] += 1
+    
+    # Risk levels
+    if fraud_rate > 10:
+        risk_level = "critical"
+        risk_score = 85
+    elif fraud_rate > 5:
+        risk_level = "high"
+        risk_score = 65
+    elif fraud_rate > 2:
+        risk_level = "medium"
+        risk_score = 40
+    else:
+        risk_level = "low"
+        risk_score = 15
+    
+    return {
+        "fraud_rate": round(fraud_rate, 2),
+        "fraud_count": len(fraud_txs),
+        "risk_level": risk_level,
+        "risk_score": risk_score,
+        "common_patterns": dict(sorted(fraud_patterns.items(), key=lambda x: x[1], reverse=True)[:3])
+    }
+
+
+def _detect_anomalies(transactions: list) -> dict:
+    """Detect unusual transaction patterns (velocity, amounts, timing)."""
+    if not transactions:
+        return {"anomalies": [], "velocity_alert": False, "amount_alert": False}
+    
+    anomalies = []
+    
+    # 1. Velocity Check: transactions per hour
+    hour_counts = Counter()
+    for tx in transactions:
+        h = tx.timestamp.hour
+        hour_counts[h] += 1
+    
+    max_hourly_txs = max(hour_counts.values()) if hour_counts else 0
+    avg_hourly_txs = sum(hour_counts.values()) / 24 if hour_counts else 0
+    velocity_spike = max_hourly_txs > (avg_hourly_txs * 3)  # 3x normal
+    
+    if velocity_spike:
+        anomalies.append(f"⚠️ Velocity spike: {max_hourly_txs} txns/hour (normal: {avg_hourly_txs:.1f})")
+    
+    # 2. Amount Analysis: unusual transaction sizes
+    amounts = [tx.amount for tx in transactions]
+    if len(amounts) > 1:
+        mean_amt = statistics.mean(amounts)
+        stdev_amt = statistics.stdev(amounts)
+        
+        # Flag transactions > 2 std dev from mean
+        outlier_amounts = [amt for amt in amounts if amt > mean_amt + (2 * stdev_amt)]
+        if outlier_amounts:
+            anomalies.append(f"⚠️ Large transactions: ₹{max(outlier_amounts):.0f} (avg: ₹{mean_amt:.0f})")
+    
+    # 3. Time Pattern: transactions at odd hours (11 PM - 5 AM)
+    odd_hour_txs = sum(1 for tx in transactions if tx.timestamp.hour in [23, 0, 1, 2, 3, 4, 5])
+    odd_hour_pct = (odd_hour_txs / len(transactions) * 100) if transactions else 0
+    
+    if odd_hour_pct > 30:
+        anomalies.append(f"⚠️ Late night transactions: {odd_hour_pct:.1f}% between 11pm-5am")
+    
+    # 4. Repeat sender analysis: single customer doing huge volume
+    sender_counts = Counter(tx.sender_upi_id for tx in transactions)
+    max_sender_txs = max(sender_counts.values()) if sender_counts else 0
+    max_sender_pct = (max_sender_txs / len(transactions) * 100) if transactions else 0
+    
+    if max_sender_pct > 40:
+        anomalies.append(f"⚠️ Concentration risk: one customer = {max_sender_pct:.1f}% of volume")
+    
+    return {
+        "anomalies": anomalies,
+        "velocity_alert": velocity_spike,
+        "amount_alert": len(outlier_amounts) > 0 if len(amounts) > 1 else False,
+        "max_hourly_transactions": max_hourly_txs,
+        "avg_hourly_transactions": round(avg_hourly_txs, 1)
+    }
+
+
+def _calculate_merchant_risk_score(merchant: Merchant, transactions: list, fraud_data: dict) -> dict:
+    """Calculate overall merchant risk score based on complaints, fraud, behavior."""
+    base_score = 10
+    
+    # 1. Complaint history (0-30 points)
+    complaint_score = min(30, merchant.complaint_count * 5)
+    
+    # 2. Fraud rate (0-40 points)
+    fraud_contribution = fraud_data.get("risk_score", 0) * 0.6
+    
+    # 3. Transaction recency: newer merchants are riskier
+    now = datetime.now(timezone.utc)
+    created_at = merchant.created_at
+    
+    # Handle timezone-naive created_at (assume UTC if no timezone)
+    if created_at.tzinfo is None:
+        created_at = created_at.replace(tzinfo=timezone.utc)
+    
+    days_active = (now - created_at).days
+    recency_score = max(0, 20 - (days_active // 30))  # Newer = higher risk
+    
+    total_score = min(99, base_score + complaint_score + fraud_contribution + recency_score)
+    
+    if total_score >= 70:
+        risk_tier = "🔴 CRITICAL"
+    elif total_score >= 50:
+        risk_tier = "🟠 HIGH"
+    elif total_score >= 30:
+        risk_tier = "🟡 MEDIUM"
+    else:
+        risk_tier = "🟢 LOW"
+    
+    return {
+        "risk_score": round(total_score, 1),
+        "risk_tier": risk_tier,
+        "complaint_score": complaint_score,
+        "fraud_score": fraud_contribution,
+        "recency_score": recency_score,
+        "days_active": days_active
+    }
+
+
+def _analyze_velocity(transactions: list) -> dict:
+    """Analyze transaction velocity patterns."""
+    if not transactions:
+        return {"avg_transaction_amount": 0, "max_transaction": 0, "txns_per_hour": 0}
+    
+    amounts = [tx.amount for tx in transactions]
+    txn_times = [tx.timestamp for tx in transactions]
+    
+    if len(txn_times) > 1:
+        time_span = (max(txn_times) - min(txn_times)).total_seconds() / 3600  # hours
+        txns_per_hour = len(transactions) / max(time_span, 1)
+    else:
+        txns_per_hour = 0
+    
+    return {
+        "avg_transaction_amount": round(statistics.mean(amounts), 2),
+        "max_transaction": round(max(amounts), 2),
+        "min_transaction": round(min(amounts), 2),
+        "txns_per_hour": round(txns_per_hour, 2),
+        "total_transactions": len(transactions)
+    }
+
+
+def _get_ist_time(utc_dt):
+    """Convert UTC datetime to IST (India Standard Time)."""
+    ist = tz('Asia/Kolkata')
+    return utc_dt.replace(tzinfo=timezone.utc).astimezone(ist)
 
 
 def get_insights(db: Session, merchant_upi_id: str, period: str = "week"):
     """
     Rich business insights for a merchant — revenue, customers, peak hours, day analysis.
+    NOW INCLUDES: Fraud detection, anomaly alerts, risk scoring, velocity analysis.
     """
     now = datetime.now(timezone.utc)
+    ist_now = _get_ist_time(now)
 
     if period == "day":
         start_date = now - timedelta(days=1)
@@ -44,6 +209,17 @@ def get_insights(db: Session, merchant_upi_id: str, period: str = "week"):
         change_pct = round(((current_revenue - prev_revenue) / prev_revenue) * 100, 1)
     else:
         change_pct = 0.0
+
+    # ─── Fraud & Risk Analysis ───
+    fraud_data = _calculate_fraud_score(db, merchant_upi_id, current_txs)
+    anomalies = _detect_anomalies(current_txs)
+    
+    # ─── Merchant Info & Risk Score ───
+    merchant = db.query(Merchant).filter(Merchant.upi_id == merchant_upi_id).first()
+    risk_score_data = _calculate_merchant_risk_score(merchant, current_txs, fraud_data) if merchant else {}
+    
+    # ─── Velocity Analysis ───
+    velocity_data = _analyze_velocity(current_txs)
 
     # ─── Today vs Yesterday ───
     today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
@@ -158,7 +334,6 @@ def get_insights(db: Session, merchant_upi_id: str, period: str = "week"):
     )
 
     # ─── Merchant Info ───
-    merchant = db.query(Merchant).filter(Merchant.upi_id == merchant_upi_id).first()
     merchant_info = None
     if merchant:
         merchant_info = {
@@ -188,5 +363,18 @@ def get_insights(db: Session, merchant_upi_id: str, period: str = "week"):
         "weekly_pattern": weekly_pattern,
         "top_customers": top_customer_data,
         "llm_insight": llm_insight,
-        "recommendations": recommendations
+        "recommendations": recommendations,
+        
+        # ─── NEW: Fraud & Risk Analysis ───
+        "fraud_analysis": fraud_data,
+        "anomalies": anomalies["anomalies"],
+        "velocity_alert": anomalies["velocity_alert"],
+        "amount_alert": anomalies["amount_alert"],
+        "risk_assessment": risk_score_data,
+        "velocity_metrics": velocity_data,
+        
+        # ─── Enhanced Recommendations ───
+        "security_alerts": [
+            f"🚨 {anom}" for anom in anomalies["anomalies"]
+        ] if anomalies["anomalies"] else []
     }

@@ -10,3 +10,4 @@ httpx
 gtts
 google-generativeai
 python-multipart
+pytz

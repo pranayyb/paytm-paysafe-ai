@@ -1,8 +1,8 @@
 from urllib.parse import urlparse, parse_qs
 from datetime import datetime, timezone, timedelta
 from sqlalchemy.orm import Session
-from backend.models import User, Merchant, Transaction
-from backend.services.trust_score import calculate_trust_score
+from models import User, Merchant, Transaction
+from services.trust_score import calculate_trust_score
 import math
 
 

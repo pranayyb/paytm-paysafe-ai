@@ -1,20 +1,13 @@
 from fastapi import APIRouter, Depends, UploadFile, File, Form, HTTPException
-from pydantic import BaseModel
-from typing import Optional
 from sqlalchemy.orm import Session
-from backend.database import get_db
-from backend.services.merchant_insights import get_insights
-from backend.services.whatsapp import send_whatsapp_report
-from backend.services.anomaly_detector import detect_merchant_anomalies
-from backend.services.voice import parse_hindi_intent
-from backend.models import Merchant
+from database import get_db
+from schemas import SendReportRequest
+from services.merchant_insights import get_insights
+from services.whatsapp import send_whatsapp_report
+from services.anomaly_detector import detect_merchant_anomalies
+from models import Merchant
 
 router = APIRouter(prefix="/merchant", tags=["Merchant Tools"])
-
-
-class SendReportRequest(BaseModel):
-    merchant_id: str
-    phone: str = "+919999999999"
 
 
 @router.get("/insights",

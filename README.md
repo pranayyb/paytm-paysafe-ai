@@ -145,7 +145,7 @@ User says:    "Haan bhejo"
 AI:           "Payment complete. Ramesh ko ₹500 bheje gaye."
 ```
 
-**Stack:** OpenAI Whisper (STT) → LLM intent parsing → gTTS / ElevenLabs (TTS)
+**Stack:** OpenAI Whisper (STT) → Gemini LLM intent parsing → gTTS / ElevenLabs (TTS)
 
 ---
 
@@ -229,7 +229,7 @@ Paytm dashboard.
 │                                                          │
 │  ┌─────────────┐  ┌──────────────┐  ┌───────────────┐  │
 │  │ Scam Shield │  │  QR Scanner  │  │ Voice Engine  │  │
-│  │  (LLM NLP)  │  │ (Rule+Redis) │  │(Whisper+gTTS) │  │
+  │  │  (LLM NLP)  │  │  (Rule Engine) │  │(Whisper+gTTS) │  │
 │  └──────┬──────┘  └──────┬───────┘  └──────┬────────┘  │
 │         └────────────────┼─────────────────┘            │
 │                          │                               │
@@ -261,14 +261,12 @@ Paytm dashboard.
 | Layer | Technology | Why |
 |---|---|---|
 | API Framework | FastAPI (Python) | Fastest to build, async support |
-| Database | SQLite (dev) / Supabase (prod) | Zero setup for hackathon |
-| Cache / Feature Store | Redis | Fast trust score lookups |
-| Task Queue | Celery | Scheduled WhatsApp reports |
+| Database | SQLite (dev) / PostgreSQL (prod) | Zero setup for hackathon |
 
 ### AI / ML
 | Component | Technology | Why |
 |---|---|---|
-| LLM (Scam Shield, Insights) | Claude API / GPT-4o | Best reasoning in Hindi |
+| LLM (Scam Shield, Insights) | Google Gemini | Fast reasoning in Hindi |
 | Speech-to-Text | OpenAI Whisper | Free, local, Hindi support |
 | Text-to-Speech | gTTS / ElevenLabs | Free tier sufficient |
 | Agent Orchestration | LangGraph | Multi-agent coordination |
@@ -336,7 +334,6 @@ paysafe-ai/
 │
 ├── .env.example                   # Environment variables template
 ├── requirements.txt               # Python dependencies
-├── docker-compose.yml             # One-command setup
 └── README.md
 ```
 
@@ -347,8 +344,7 @@ paysafe-ai/
 ### Prerequisites
 - Python 3.10+
 - Node.js 18+
-- Redis (or use Docker)
-- API Keys: OpenAI / Anthropic Claude, Twilio
+- API Keys: Google Gemini, Twilio
 
 ### Step 1: Clone & Configure
 ```bash
@@ -359,7 +355,7 @@ cd paysafe-ai
 cp .env.example .env
 
 # Fill in your API keys in .env
-OPENAI_API_KEY=your_key_here          # or ANTHROPIC_API_KEY
+GEMINI_API_KEY=your_key_here
 TWILIO_ACCOUNT_SID=your_sid_here
 TWILIO_AUTH_TOKEN=your_token_here
 TWILIO_WHATSAPP_FROM=whatsapp:+14155238886
@@ -391,17 +387,7 @@ npm run dev
 # Runs at http://localhost:5173
 ```
 
-### Step 4: Redis (for trust score caching)
-```bash
-# Using Docker (easiest)
-docker run -d -p 6379:6379 redis:alpine
-
-# Or install locally
-# Ubuntu: sudo apt install redis-server
-# Mac: brew install redis
-```
-
-### Step 5: Verify Everything Works
+### Step 4: Verify Everything Works
 ```bash
 # Test Scam Shield
 curl -X POST http://localhost:8000/scam/check \
@@ -624,9 +610,9 @@ Located at `backend/data/scam_patterns.json` — 50+ known Indian scam scripts i
 ### ML Models Used:
 | Feature | Model Type | Training Needed? |
 |---|---|---|
-| Scam Shield | LLM prompt (Claude/GPT) | ❌ No — zero-shot |
+| Scam Shield | Gemini API | ❌ No — zero-shot |
 | Trust Badge | Rule-based scoring | ❌ No — pure logic |
-| QR Scanner | Rule-based + Redis | ❌ No — pure logic |
+| QR Scanner | Rule-based | ❌ No — pure logic |
 | Voice STT | Whisper (pretrained) | ❌ No — pretrained |
 | Merchant Insights | SQL + LLM summary | ❌ No — SQL + prompts |
 | Anomaly Detection | Statistical rules | ❌ No — thresholds |
@@ -684,7 +670,7 @@ railway init
 railway up
 
 # Set environment variables in Railway dashboard
-# Add: OPENAI_API_KEY, TWILIO_ACCOUNT_SID, etc.
+# Add: GEMINI_API_KEY, TWILIO_ACCOUNT_SID, etc.
 ```
 
 ### Frontend (Vercel — Free)
@@ -707,8 +693,7 @@ npx vercel
 
 | Service | Free Tier | Estimated Usage |
 |---|---|---|
-| OpenAI API | $5 credit | ~200 demo calls = $1 |
-| Anthropic Claude | $5 credit | ~200 demo calls = $1 |
+| Google Gemini | Free tier | ~200 demo calls = free |
 | Twilio WhatsApp | 1000 free messages | ~20 for demo |
 | Railway | $5 free | Backend hosting |
 | Vercel | Unlimited free | Frontend hosting |

@@ -1,7 +1,7 @@
 from datetime import datetime, timezone, timedelta
 from sqlalchemy.orm import Session
 from sqlalchemy import func as sql_func
-from backend.models import User, Merchant, Transaction
+from models import User, Merchant, Transaction
 
 
 def calculate_trust_score(db: Session, upi_id: str):

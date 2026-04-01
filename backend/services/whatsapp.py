@@ -1,6 +1,6 @@
 import os
 from twilio.rest import Client
-from backend.config import settings
+from config import settings
 
 def send_whatsapp_report(merchant_id: str, phone: str, report_data: dict):
     """

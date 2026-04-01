@@ -2,7 +2,7 @@ from datetime import datetime, timedelta, timezone
 from collections import Counter, defaultdict
 from sqlalchemy.orm import Session
 from sqlalchemy import func as sql_func
-from backend.models import Transaction, Merchant, User
+from models import Transaction, Merchant, User
 
 
 def get_insights(db: Session, merchant_upi_id: str, period: str = "week"):

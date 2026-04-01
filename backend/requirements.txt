@@ -3,12 +3,10 @@ uvicorn
 sqlalchemy
 faker
 twilio
-redis
 python-dotenv
 pydantic
 pydantic-settings
 httpx
 gtts
-openai
-anthropic
+google-generativeai
 python-multipart

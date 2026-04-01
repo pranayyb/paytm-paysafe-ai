@@ -2,7 +2,9 @@ import json
 import os
 import re
 from pathlib import Path
-from backend.config import settings
+from typing import Optional, List
+from config import settings
+from schemas import MatchedPattern, ScamAnalysisResponse
 
 # Load patterns
 DATA_DIR = Path(__file__).parent.parent / "data"
@@ -87,45 +89,39 @@ def _keyword_analysis(message: str, payment_context: dict = None):
 
 
 async def _llm_analysis(message: str, payment_context: dict = None):
-    """Use OpenAI GPT to analyze the message for scam patterns."""
+    """Use Google Gemini with structured output to analyze the message for scam patterns."""
     try:
-        from openai import AsyncOpenAI
-        client = AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
+        import google.generativeai as genai
+        genai.configure(api_key=settings.GEMINI_API_KEY)
 
         system_prompt = """You are PaySafe AI, an expert Indian UPI scam detector. 
-You analyze messages in Hindi/Hinglish/English for fraud patterns common in India.
+                        You analyze messages in Hindi/Hinglish/English for fraud patterns common in India.
 
-Respond ONLY with valid JSON:
-{
-  "is_scam": true/false,
-  "confidence": 0-99,
-  "scam_type": "type_name" or null,
-  "warning_hindi": "Hindi warning message" or null,
-  "recommendation": "DO_NOT_PAY" or "PROCEED_CAREFULLY" or "SAFE"
-}
+                        Identify the scam pattern and provide a warning in Hindi.
 
-Common Indian scam types: electricity_scam, kyc_scam, lottery_scam, emergency_scam, 
-refund_scam, fake_delivery, otp_scam, investment_scam, job_scam, loan_scam, 
-police_threat, rbi_impersonation, tech_support_scam, sim_swap_scam, romance_scam, 
-fake_upi_app, cashback_scam, income_tax_scam, custom_duty_scam"""
+                        Common Indian scam types: electricity_scam, kyc_scam, lottery_scam, emergency_scam, 
+                        refund_scam, fake_delivery, otp_scam, investment_scam, job_scam, loan_scam, 
+                        police_threat, rbi_impersonation, tech_support_scam, sim_swap_scam, romance_scam, 
+                        fake_upi_app, cashback_scam, income_tax_scam, custom_duty_scam"""
 
         user_msg = f"Analyze this message for scam: \"{message}\""
         if payment_context:
             user_msg += f"\nPayment context: amount=₹{payment_context.get('amount')}, receiver={payment_context.get('receiver_upi')}"
 
-        response = await client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_msg}
-            ],
-            temperature=0.1,
-            response_format={"type": "json_object"}
+        client = genai.Client()
+        response = client.models.generate_content(
+            model="gemini-1.5-flash",
+            contents=user_msg,
+            config={
+                "response_mime_type": "application/json",
+                "response_json_schema": ScamAnalysisResponse.model_json_schema(),
+            },
+            system_instruction=system_prompt,
         )
-
-        result = json.loads(response.choices[0].message.content)
-        result["matched_patterns"] = [{"type": result.get("scam_type"), "confidence": result.get("confidence")}]
-        return result
+        
+        # Parse structured response using Pydantic
+        result = ScamAnalysisResponse.model_validate_json(response.text)
+        return result.model_dump()
 
     except Exception as e:
         # Fallback to keyword analysis if LLM fails
@@ -138,7 +134,7 @@ async def analyze_message(message: str, payment_context: dict = None):
     Hybrid scam analysis: tries LLM first, falls back to keyword matching.
     """
     # Try LLM if API key is configured
-    if settings.OPENAI_API_KEY and settings.OPENAI_API_KEY != "your_openai_key_here":
+    if settings.GEMINI_API_KEY and settings.GEMINI_API_KEY != "your_gemini_key_here":
         llm_result = await _llm_analysis(message, payment_context)
         if llm_result:
             llm_result["analysis_mode"] = "llm"

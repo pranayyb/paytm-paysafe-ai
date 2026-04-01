@@ -3,8 +3,8 @@ import time
 import os
 from gtts import gTTS
 from sqlalchemy.orm import Session
-from backend.models import User
-from backend.services.trust_score import calculate_trust_score
+from models import User
+from services.trust_score import calculate_trust_score
 
 # ─── Hindi Intent Parser ───
 # Maps Hindi number words to digits

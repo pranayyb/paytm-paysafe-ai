@@ -1,0 +1,202 @@
+[
+  {
+    "id": 1,
+    "upi_id": "widisha@sbi",
+    "name": "Widisha Panchal",
+    "created_at": "2025-01-13T00:00:00",
+    "is_merchant": false,
+    "has_disputes": false
+  },
+  {
+    "id": 2,
+    "upi_id": "neha@icici",
+    "name": "Neha Kakar",
+    "created_at": "2025-03-13T00:00:00",
+    "is_merchant": false,
+    "has_disputes": false
+  },
+  {
+    "id": 3,
+    "upi_id": "elijah@hdfc",
+    "name": "Elijah Raj",
+    "created_at": "2025-10-07T00:00:00",
+    "is_merchant": false,
+    "has_disputes": false
+  },
+  {
+    "id": 4,
+    "upi_id": "priya@sbi",
+    "name": "Priya Kadakia",
+    "created_at": "2025-02-17T00:00:00",
+    "is_merchant": false,
+    "has_disputes": false
+  },
+  {
+    "id": 5,
+    "upi_id": "warda@barodabank",
+    "name": "Warda Goswami",
+    "created_at": "2025-01-14T00:00:00",
+    "is_merchant": false,
+    "has_disputes": false
+  },
+  {
+    "id": 6,
+    "upi_id": "aryan@hdfc",
+    "name": "Aryan Narayan",
+    "created_at": "2025-10-07T00:00:00",
+    "is_merchant": false,
+    "has_disputes": false
+  },
+  {
+    "id": 7,
+    "upi_id": "jonathan@barodabank",
+    "name": "Jonathan Menon",
+    "created_at": "2025-05-23T00:00:00",
+    "is_merchant": false,
+    "has_disputes": false
+  },
+  {
+    "id": 8,
+    "upi_id": "rajesh@icici",
+    "name": "Rajesh Sampath",
+    "created_at": "2025-08-05T00:00:00",
+    "is_merchant": false,
+    "has_disputes": false
+  },
+  {
+    "id": 9,
+    "upi_id": "vikram@icici",
+    "name": "Vikram Karpe",
+    "created_at": "2025-06-22T00:00:00",
+    "is_merchant": false,
+    "has_disputes": false
+  },
+  {
+    "id": 10,
+    "upi_id": "divya@sbi",
+    "name": "Divya Narasimhan",
+    "created_at": "2025-07-03T00:00:00",
+    "is_merchant": false,
+    "has_disputes": false
+  },
+  {
+    "id": 11,
+    "upi_id": "janya@okhdfcbank",
+    "name": "Janya Bawa",
+    "created_at": "2025-01-23T00:00:00",
+    "is_merchant": false,
+    "has_disputes": false
+  },
+  {
+    "id": 12,
+    "upi_id": "maanav@sbi",
+    "name": "Maanav Walla",
+    "created_at": "2025-07-13T00:00:00",
+    "is_merchant": false,
+    "has_disputes": false
+  },
+  {
+    "id": 13,
+    "upi_id": "nirja@hdfc",
+    "name": "Nirja Arya",
+    "created_at": "2025-07-05T00:00:00",
+    "is_merchant": false,
+    "has_disputes": false
+  },
+  {
+    "id": 14,
+    "upi_id": "aryan@sbi",
+    "name": "Aryan Muni",
+    "created_at": "2025-01-24T00:00:00",
+    "is_merchant": false,
+    "has_disputes": false
+  },
+  {
+    "id": 15,
+    "upi_id": "gautam@okhdfcbank",
+    "name": "Gautam Jayaraman",
+    "created_at": "2025-02-10T00:00:00",
+    "is_merchant": false,
+    "has_disputes": false
+  },
+  {
+    "id": 16,
+    "upi_id": "yashica@sbi",
+    "name": "Yashica Tank",
+    "created_at": "2025-07-14T00:00:00",
+    "is_merchant": false,
+    "has_disputes": false
+  },
+  {
+    "id": 17,
+    "upi_id": "widisha@okhdfcbank",
+    "name": "Widisha Chandra",
+    "created_at": "2025-03-25T00:00:00",
+    "is_merchant": false,
+    "has_disputes": false
+  },
+  {
+    "id": 18,
+    "upi_id": "harish@hdfc",
+    "name": "Harish Kibe",
+    "created_at": "2025-05-17T00:00:00",
+    "is_merchant": false,
+    "has_disputes": false
+  },
+  {
+    "id": 19,
+    "upi_id": "amit@barodabank",
+    "name": "Amit Gupta",
+    "created_at": "2025-03-29T00:00:00",
+    "is_merchant": false,
+    "has_disputes": false
+  },
+  {
+    "id": 20,
+    "upi_id": "jonathan@axis",
+    "name": "Jonathan Khosla",
+    "created_at": "2025-05-19T00:00:00",
+    "is_merchant": false,
+    "has_disputes": false
+  },
+  {
+    "id": 21,
+    "upi_id": "widisha@hdfc",
+    "name": "Widisha Kara",
+    "created_at": "2025-10-13T00:00:00",
+    "is_merchant": false,
+    "has_disputes": false
+  },
+  {
+    "id": 22,
+    "upi_id": "rajiv@sbi",
+    "name": "Rajiv Iyengar",
+    "created_at": "2025-04-28T00:00:00",
+    "is_merchant": false,
+    "has_disputes": false
+  },
+  {
+    "id": 23,
+    "upi_id": "hemal@okhdfcbank",
+    "name": "Hemal Parmer",
+    "created_at": "2025-07-25T00:00:00",
+    "is_merchant": false,
+    "has_disputes": false
+  },
+  {
+    "id": 24,
+    "upi_id": "harish@barodabank",
+    "name": "Harish Kurian",
+    "created_at": "2025-06-11T00:00:00",
+    "is_merchant": false,
+    "has_disputes": false
+  },
+  {
+    "id": 25,
+    "upi_id": "ekta@axis",
+    "name": "Ekta Vyas",
+    "created_at": "2025-08-23T00:00:00",
+    "is_merchant": false,
+    "has_disputes": false
+  }
+]

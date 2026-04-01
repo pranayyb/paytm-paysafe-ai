@@ -4,9 +4,9 @@ from fastapi.staticfiles import StaticFiles
 from contextlib import asynccontextmanager
 import os
 
-from backend.database import engine, Base
-from backend.routes.user_routes import router as user_router
-from backend.routes.merchant_routes import router as merchant_router
+from database import engine, Base
+from routes.user_routes import router as user_router
+from routes.merchant_routes import router as merchant_router
 
 
 @asynccontextmanager
@@ -14,12 +14,12 @@ async def lifespan(app: FastAPI):
     """Startup: create tables and seed data if empty."""
     Base.metadata.create_all(bind=engine)
     # Auto-seed data on first run
-    from backend.database import SessionLocal
-    from backend.models import User
+    from database import SessionLocal
+    from models import User
     db = SessionLocal()
     if db.query(User).count() == 0:
         print("⚡ No data found. Running synthetic data generation...")
-        from backend.synthetic_data import generate_data
+        from synthetic_data import generate_data
         generate_data()
         print("✅ Synthetic data generated!")
     db.close()
@@ -70,8 +70,8 @@ def read_root():
 
 @app.get("/health", tags=["System"])
 def health_check():
-    from backend.database import SessionLocal
-    from backend.models import User
+    from database import SessionLocal
+    from models import User
     db = SessionLocal()
     try:
         user_count = db.query(User).count()

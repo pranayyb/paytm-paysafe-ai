@@ -1,43 +1,13 @@
 from fastapi import APIRouter, Depends, UploadFile, File, HTTPException
-from pydantic import BaseModel
-from typing import Optional
 from sqlalchemy.orm import Session
-from backend.database import get_db
-from backend.services.scam_shield import analyze_message, get_all_patterns
-from backend.services.trust_score import calculate_trust_score
-from backend.services.qr_scanner import scan_qr
-from backend.services.voice import process_voice_payment
+from database import get_db
+from schemas import ScamCheckRequest, ScamCheckResponse, QRScanRequest
+from services.scam_shield import analyze_message, get_all_patterns
+from services.trust_score import calculate_trust_score
+from services.qr_scanner import scan_qr
+from services.voice import process_voice_payment
 
 router = APIRouter(tags=["User Protection"])
-
-
-# ─── Request / Response Models ───
-
-class PaymentContext(BaseModel):
-    amount: Optional[float] = None
-    receiver_upi: Optional[str] = None
-
-class ScamCheckRequest(BaseModel):
-    message: str
-    payment_context: Optional[PaymentContext] = None
-
-class ScamCheckResponse(BaseModel):
-    is_scam: bool
-    confidence: int
-    scam_type: Optional[str] = None
-    warning_hindi: Optional[str] = None
-    recommendation: str
-    analysis_mode: Optional[str] = None
-    matched_patterns: list = []
-
-class UserLocation(BaseModel):
-    lat: float
-    lng: float
-
-class QRScanRequest(BaseModel):
-    qr_data: str
-    user_location: Optional[UserLocation] = None
-
 
 # ─── Endpoints ───
 

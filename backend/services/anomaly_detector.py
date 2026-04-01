@@ -1,7 +1,7 @@
 from datetime import datetime, timezone, timedelta
 from sqlalchemy.orm import Session
 from sqlalchemy import func as sql_func
-from backend.models import Transaction, Merchant
+from models import Transaction, Merchant
 
 
 def detect_merchant_anomalies(db: Session, merchant_upi_id: str):

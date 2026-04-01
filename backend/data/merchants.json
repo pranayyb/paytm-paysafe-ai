@@ -1,0 +1,182 @@
+[
+  {
+    "id": 1,
+    "upi_id": "vikram_vegetables_market@icici",
+    "name": "Vikram Vegetables Market",
+    "category": "market",
+    "phone": "+918564233310",
+    "created_at": "2025-10-27T00:00:00",
+    "complaint_count": 3
+  },
+  {
+    "id": 2,
+    "upi_id": "mahika_biryani_house@barodabank",
+    "name": "Mahika Biryani House",
+    "category": "vegetables",
+    "phone": "+918470987740",
+    "created_at": "2025-03-12T00:00:00",
+    "complaint_count": 4
+  },
+  {
+    "id": 3,
+    "upi_id": "ekta_electronics@sbi",
+    "name": "Ekta Electronics",
+    "category": "cafe",
+    "phone": "+918328224239",
+    "created_at": "2025-03-23T00:00:00",
+    "complaint_count": 3
+  },
+  {
+    "id": 4,
+    "upi_id": "janya_biryani_house@sbi",
+    "name": "Janya Biryani House",
+    "category": "food",
+    "phone": "+919279660644",
+    "created_at": "2025-08-28T00:00:00",
+    "complaint_count": 4
+  },
+  {
+    "id": 5,
+    "upi_id": "mohan_kirana_store@barodabank",
+    "name": "Mohan Kirana Store",
+    "category": "cafe",
+    "phone": "+919463961867",
+    "created_at": "2025-10-02T00:00:00",
+    "complaint_count": 2
+  },
+  {
+    "id": 6,
+    "upi_id": "gautam_dairy@hdfc",
+    "name": "Gautam Dairy",
+    "category": "cafe",
+    "phone": "+918630286724",
+    "created_at": "2025-08-11T00:00:00",
+    "complaint_count": 1
+  },
+  {
+    "id": 7,
+    "upi_id": "jonathan_pharmacy@sbi",
+    "name": "Jonathan Pharmacy",
+    "category": "clothing",
+    "phone": "+919636301367",
+    "created_at": "2025-04-02T00:00:00",
+    "complaint_count": 4
+  },
+  {
+    "id": 8,
+    "upi_id": "falak_sweets_shop@sbi",
+    "name": "Falak Sweets Shop",
+    "category": "clothing",
+    "phone": "+919307753571",
+    "created_at": "2025-04-12T00:00:00",
+    "complaint_count": 1
+  },
+  {
+    "id": 9,
+    "upi_id": "krishna_vegetables_market@icici",
+    "name": "Krishna Vegetables Market",
+    "category": "clothing",
+    "phone": "+919972449774",
+    "created_at": "2025-01-01T00:00:00",
+    "complaint_count": 4
+  },
+  {
+    "id": 10,
+    "upi_id": "rajiv_kirana_store@axis",
+    "name": "Rajiv Kirana Store",
+    "category": "cafe",
+    "phone": "+919995224088",
+    "created_at": "2025-07-05T00:00:00",
+    "complaint_count": 2
+  },
+  {
+    "id": 11,
+    "upi_id": "neha_mobile_repair@sbi",
+    "name": "Neha Mobile Repair",
+    "category": "beverages",
+    "phone": "+918169129475",
+    "created_at": "2025-02-13T00:00:00",
+    "complaint_count": 3
+  },
+  {
+    "id": 12,
+    "upi_id": "nirja_vegetables_market@sbi",
+    "name": "Nirja Vegetables Market",
+    "category": "tailoring",
+    "phone": "+918275718574",
+    "created_at": "2025-09-01T00:00:00",
+    "complaint_count": 4
+  },
+  {
+    "id": 13,
+    "upi_id": "deepa_sarees@okhdfcbank",
+    "name": "Deepa Sarees",
+    "category": "personal_care",
+    "phone": "+918908681807",
+    "created_at": "2025-04-19T00:00:00",
+    "complaint_count": 4
+  },
+  {
+    "id": 14,
+    "upi_id": "gautam_fashion_boutique@hdfc",
+    "name": "Gautam Fashion Boutique",
+    "category": "sweets",
+    "phone": "+918856829437",
+    "created_at": "2025-07-11T00:00:00",
+    "complaint_count": 3
+  },
+  {
+    "id": 15,
+    "upi_id": "mahika_pan_shop@barodabank",
+    "name": "Mahika Pan Shop",
+    "category": "cafe",
+    "phone": "+918532373262",
+    "created_at": "2025-04-26T00:00:00",
+    "complaint_count": 0
+  },
+  {
+    "id": 16,
+    "upi_id": "rajiv_tea_stall@sbi",
+    "name": "Rajiv Tea Stall",
+    "category": "market",
+    "phone": "+918494167625",
+    "created_at": "2025-04-23T00:00:00",
+    "complaint_count": 0
+  },
+  {
+    "id": 17,
+    "upi_id": "amit_electronics@hdfc",
+    "name": "Amit Electronics",
+    "category": "repair",
+    "phone": "+918144741091",
+    "created_at": "2025-01-17T00:00:00",
+    "complaint_count": 2
+  },
+  {
+    "id": 18,
+    "upi_id": "amit_mobile_repair@barodabank",
+    "name": "Amit Mobile Repair",
+    "category": "pharmacy",
+    "phone": "+919436618835",
+    "created_at": "2025-09-06T00:00:00",
+    "complaint_count": 1
+  },
+  {
+    "id": 19,
+    "upi_id": "maanav_tea_stall@icici",
+    "name": "Maanav Tea Stall",
+    "category": "beverages",
+    "phone": "+919015053308",
+    "created_at": "2025-05-05T00:00:00",
+    "complaint_count": 3
+  },
+  {
+    "id": 20,
+    "upi_id": "hemal_fashion_boutique@axis",
+    "name": "Hemal Fashion Boutique",
+    "category": "cafe",
+    "phone": "+918208157333",
+    "created_at": "2025-08-09T00:00:00",
+    "complaint_count": 2
+  }
+]

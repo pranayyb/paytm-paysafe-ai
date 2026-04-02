@@ -1,6 +1,6 @@
 import random
 import json
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from faker import Faker
 from pathlib import Path
 from database import SessionLocal, engine, Base
@@ -18,26 +18,66 @@ FIRST_NAMES = [
     "Rajesh", "Priya", "Amit", "Sunita", "Vikram", "Deepa", "Harish", "Neha",
     "Mohan", "Anita", "Rajiv", "Krishna", "Divya", "Patrick", "Jonathan", "Ekta",
     "Warda", "Maanav", "Chanchal", "Janya", "Widisha", "Elijah", "Aryan", "Ekani",
-    "Gautam", "Hemal", "Nirja", "Yashica", "Mahika", "Falak"
+    "Gautam", "Hemal", "Nirja", "Yashica", "Mahika", "Falak", "Pranay", "Dishant",
+    "Saurabh", "Aarav", "Riya", "Kavya", "Ishaan", "Aisha", "Veer", "Tanya"
 ]
 
 MERCHANT_NAMES = [
     "Kirana Store", "Electronics", "Beauty Salon", "Coffee House", "Tailor Shop",
     "Recharge Shop", "Fashion Boutique", "Mobile Repair", "Pharmacy", "Sweets Shop",
     "Dairy", "Vegetables", "Biryani House", "Books Store", "Pan Shop", "Dry Fruits",
-    "Sarees", "Vegetables Market", "Tea Stall", "Barber Shop"
+    "Sarees", "Vegetables Market", "Tea Stall", "Barber Shop", "Pizza Corner",
+    "Juice Bar", "Hardware Store", "Gym", "Coaching Center"
 ]
 
 MERCHANT_CATEGORIES = [
     "grocery", "electronics", "beauty", "cafe", "tailoring", "recharge", "fashion",
     "repair", "pharmacy", "sweets", "dairy", "vegetables", "food", "books", "general",
-    "fruits", "clothing", "market", "beverages", "personal_care"
+    "fruits", "clothing", "market", "beverages", "personal_care", "fitness", "education"
 ]
 
-BANK_CODES = ["sbi", "icici", "okhdfcbank", "axis", "barodabank", "hdfc"]
+BANK_CODES = ["sbi", "icici", "okhdfcbank", "axis", "barodabank", "hdfc", "paytm", "ybl"]
 
 SCAM_PATTERNS = ['electricity_scam', 'kyc_scam', 'lottery_scam', 'emergency_scam',
                   'refund_scam', 'fake_delivery', 'otp_scam', 'investment_scam']
+
+# Realistic transaction amount ranges by merchant category
+AMOUNT_RANGES = {
+    "grocery": (20, 2000),
+    "electronics": (500, 25000),
+    "beauty": (100, 5000),
+    "cafe": (50, 800),
+    "tailoring": (200, 3000),
+    "recharge": (10, 999),
+    "fashion": (300, 8000),
+    "repair": (100, 5000),
+    "pharmacy": (50, 3000),
+    "sweets": (50, 2000),
+    "dairy": (20, 500),
+    "vegetables": (20, 800),
+    "food": (80, 1500),
+    "books": (100, 2000),
+    "general": (10, 5000),
+    "fruits": (30, 600),
+    "clothing": (200, 5000),
+    "market": (50, 3000),
+    "beverages": (20, 400),
+    "personal_care": (50, 2000),
+    "fitness": (500, 5000),
+    "education": (1000, 15000),
+}
+
+# Peak hours for different merchant categories (realistic Indian patterns)
+PEAK_HOURS = {
+    "grocery": [8, 9, 10, 17, 18, 19],
+    "cafe": [8, 9, 10, 15, 16, 17],
+    "food": [12, 13, 14, 19, 20, 21],
+    "pharmacy": [9, 10, 11, 18, 19],
+    "vegetables": [6, 7, 8, 17, 18],
+    "dairy": [6, 7, 8, 18, 19],
+    "recharge": [10, 11, 12, 14, 15, 16, 17, 18],
+    "default": [9, 10, 11, 14, 15, 16, 17, 18, 19],
+}
 
 
 def generate_data():
@@ -50,14 +90,13 @@ def generate_data():
         db.close()
         return
 
-    # ─── Generate Users ───
+    # ─── Generate Users (50 users) ───
     users = []
     user_data = []
     used_upi = set()
-    print("Generating 25 users...")
+    print("Generating 50 users...")
     
-    for i in range(25):
-        # Ensure unique UPI IDs
+    for i in range(50):
         while True:
             first = random.choice(FIRST_NAMES)
             bank = random.choice(BANK_CODES)
@@ -68,7 +107,7 @@ def generate_data():
         
         last = fake.last_name()
         name = f"{first} {last}"
-        created_at = datetime(2025, 1, 1) + timedelta(days=random.randint(0, 300))
+        created_at = datetime(2025, 1, 1, tzinfo=timezone.utc) + timedelta(days=random.randint(0, 300))
         has_disputes = random.choice([True, False]) if random.random() < 0.1 else False
         dispute_count = random.randint(0, 3) if has_disputes else 0
         complaint_count = random.randint(0, 2)
@@ -80,7 +119,7 @@ def generate_data():
             is_merchant=False,
             has_disputes=has_disputes,
             dispute_count=dispute_count,
-            total_transaction_count=0,  # Will be updated after transaction generation
+            total_transaction_count=0,
             complaint_count=complaint_count
         )
         users.append(user)
@@ -97,13 +136,13 @@ def generate_data():
             "complaint_count": complaint_count
         })
 
-    # ─── Generate Merchants ───
+    # ─── Generate Merchants (25 merchants) ───
     merchants = []
     merchant_data = []
-    print("Generating 20 merchants...")
+    merchant_categories = {}  # upi_id -> category mapping
+    print("Generating 25 merchants...")
     
-    for i in range(20):
-        # Ensure unique UPI IDs (avoiding user conflicts)
+    for i in range(25):
         while True:
             first = random.choice(FIRST_NAMES)
             bank = random.choice(BANK_CODES)
@@ -116,8 +155,10 @@ def generate_data():
         name = f"{first} {merchant_type}"
         category = random.choice(MERCHANT_CATEGORIES)
         phone = f"+91{random.randint(8000000000, 9999999999)}"
-        created_at = datetime(2025, 1, 1) + timedelta(days=random.randint(0, 300))
+        created_at = datetime(2025, 1, 1, tzinfo=timezone.utc) + timedelta(days=random.randint(0, 200))
         complaint_count = random.randint(0, 4)
+        
+        merchant_categories[upi_id] = category
         
         merchant = Merchant(
             upi_id=upi_id,
@@ -130,7 +171,7 @@ def generate_data():
         merchants.append(merchant)
         db.add(merchant)
         
-        # Also add as User for merchant purposes
+        # Also add as User for cross-referencing
         user_merch = User(
             upi_id=upi_id,
             name=name,
@@ -138,7 +179,7 @@ def generate_data():
             is_merchant=True,
             has_disputes=(complaint_count > 0),
             dispute_count=random.randint(0, 2) if complaint_count > 0 else 0,
-            total_transaction_count=0,  # Will be updated after transaction generation
+            total_transaction_count=0,
             complaint_count=complaint_count
         )
         db.add(user_merch)
@@ -155,27 +196,63 @@ def generate_data():
 
     db.commit()
 
-    # ─── Generate Transactions ───
-    print("Generating 200 transactions...")
+    # ─── Generate Rich Transaction History (2000 transactions across 90 days) ───
+    print("Generating 2000 realistic transactions...")
     transactions = []
     transaction_data = []
     
-    for i in range(200):
+    # Current time reference
+    now = datetime.now(timezone.utc)
+    
+    for i in range(2000):
         sender = random.choice(users)
         receiver = random.choice(merchants)
         
-        amount = round(random.uniform(10, 5000), 2)
+        # Get category-appropriate amount range
+        category = merchant_categories.get(receiver.upi_id, "general")
+        min_amt, max_amt = AMOUNT_RANGES.get(category, (10, 5000))
+        amount = round(random.uniform(min_amt, max_amt), 2)
         
-        # 5% fraud rate
+        # Realistic time distribution: more recent = more transactions
+        # 60% in last 7 days, 25% in last 30 days, 15% older
+        time_bucket = random.random()
+        if time_bucket < 0.60:
+            # Last 7 days (dense — makes dashboards look alive)
+            days_ago = random.uniform(0, 7)
+        elif time_bucket < 0.85:
+            # Last 30 days
+            days_ago = random.uniform(7, 30)
+        else:
+            # Last 90 days
+            days_ago = random.uniform(30, 90)
+        
+        # Use realistic peak hours for time of day
+        peak_hours = PEAK_HOURS.get(category, PEAK_HOURS["default"])
+        if random.random() < 0.7:
+            # 70% during peak hours
+            hour = random.choice(peak_hours)
+        else:
+            # 30% random hours (but avoid 1-5 AM)
+            hour = random.choice([6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23])
+        
+        timestamp = now - timedelta(
+            days=days_ago,
+            hours=random.randint(0, 2),
+            minutes=random.randint(0, 59)
+        )
+        timestamp = timestamp.replace(hour=hour)
+        
+        # 5% fraud rate with patterns
         is_fraud = random.random() < 0.05
         fraud_pattern = random.choice(SCAM_PATTERNS) if is_fraud else None
         
-        # Transactions spread across last 2 months
-        timestamp = datetime(2026, 2, 1) + timedelta(
-            days=random.randint(0, 60),
-            hours=random.randint(0, 23),
-            minutes=random.randint(0, 59)
-        )
+        # Some frauds have specific characteristics
+        if is_fraud:
+            # Fraudulent transactions tend to be larger or very small
+            if random.random() < 0.6:
+                amount = round(random.uniform(5000, 25000), 2)  # Large fraud
+            else:
+                amount = round(random.uniform(1, 10), 2)  # Micro-fraud (social engineering)
         
         tx = Transaction(
             sender_upi_id=sender.upi_id,
@@ -203,7 +280,6 @@ def generate_data():
     db.commit()
 
     # ─── Update Transaction Counts ───
-    # Calculate total_transaction_count for each user based on how many transactions they received
     from sqlalchemy import func as sql_func
     receiver_counts = db.query(
         Transaction.receiver_upi_id,
@@ -300,13 +376,15 @@ def generate_data():
     with open(DATA_DIR / "scam_patterns.json", "w") as f:
         json.dump(scam_patterns_data, f, indent=2)
 
-    print(f"✅ Generated {len(users)} users, {len(merchants)} merchants, {len(transactions)} transactions")
+    fraud_count = sum(1 for t in transaction_data if t['is_fraud'])
+    print(f"\n✅ Generated {len(users)} users, {len(merchants)} merchants, {len(transactions)} transactions")
     print(f"📄 Exported to:")
     print(f"   • data/users.json ({len(user_data)} users)")
     print(f"   • data/merchants.json ({len(merchant_data)} merchants)")
     print(f"   • data/sample_transactions.json ({len(transaction_data)} transactions)")
     print(f"   • data/scam_patterns.json ({len(scam_patterns_data)} patterns)")
-    print(f"📊 Fraud rate: {sum(1 for t in transaction_data if t['is_fraud']) / len(transaction_data) * 100:.1f}%")
+    print(f"📊 Fraud rate: {fraud_count / len(transaction_data) * 100:.1f}% ({fraud_count} frauds)")
+    print(f"📆 Data range: Last 90 days (60% in last 7 days for fresh dashboards)")
     
     db.close()
 

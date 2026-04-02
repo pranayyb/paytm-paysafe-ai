@@ -1,182 +1,227 @@
 [
   {
     "id": 1,
-    "upi_id": "yashica_coffee_house@sbi",
-    "name": "Yashica Coffee House",
-    "category": "market",
-    "phone": "+919612497800",
-    "created_at": "2025-05-17T00:00:00",
-    "complaint_count": 2
+    "upi_id": "aarav_electronics@okhdfcbank",
+    "name": "Aarav Electronics",
+    "category": "clothing",
+    "phone": "+918172038057",
+    "created_at": "2025-02-17T00:00:00+00:00",
+    "complaint_count": 0
   },
   {
     "id": 2,
-    "upi_id": "anita_recharge_shop@axis",
-    "name": "Anita Recharge Shop",
-    "category": "general",
-    "phone": "+918006969260",
-    "created_at": "2025-05-15T00:00:00",
+    "upi_id": "veer_juice_bar@icici",
+    "name": "Veer Juice Bar",
+    "category": "repair",
+    "phone": "+918867101399",
+    "created_at": "2025-01-31T00:00:00+00:00",
     "complaint_count": 4
   },
   {
     "id": 3,
-    "upi_id": "warda_sweets_shop@sbi",
-    "name": "Warda Sweets Shop",
-    "category": "clothing",
-    "phone": "+919307753571",
-    "created_at": "2025-04-12T00:00:00",
-    "complaint_count": 1
-  },
-  {
-    "id": 4,
-    "upi_id": "gautam_vegetables_market@icici",
-    "name": "Gautam Vegetables Market",
-    "category": "clothing",
-    "phone": "+919972449774",
-    "created_at": "2025-01-01T00:00:00",
+    "upi_id": "aisha_barber_shop@sbi",
+    "name": "Aisha Barber Shop",
+    "category": "beauty",
+    "phone": "+918900278641",
+    "created_at": "2025-06-18T00:00:00+00:00",
     "complaint_count": 4
   },
   {
+    "id": 4,
+    "upi_id": "aarav_pharmacy@hdfc",
+    "name": "Aarav Pharmacy",
+    "category": "fashion",
+    "phone": "+919438225581",
+    "created_at": "2025-07-03T00:00:00+00:00",
+    "complaint_count": 2
+  },
+  {
     "id": 5,
-    "upi_id": "ekta_coffee_house@sbi",
-    "name": "Ekta Coffee House",
-    "category": "vegetables",
-    "phone": "+919887040856",
-    "created_at": "2025-06-07T00:00:00",
-    "complaint_count": 1
+    "upi_id": "warda_tailor_shop@paytm",
+    "name": "Warda Tailor Shop",
+    "category": "education",
+    "phone": "+919386202388",
+    "created_at": "2025-03-18T00:00:00+00:00",
+    "complaint_count": 3
   },
   {
     "id": 6,
-    "upi_id": "neha_beauty_salon@barodabank",
-    "name": "Neha Beauty Salon",
-    "category": "beauty",
-    "phone": "+919571759591",
-    "created_at": "2025-09-06T00:00:00",
+    "upi_id": "vikram_pan_shop@sbi",
+    "name": "Vikram Pan Shop",
+    "category": "personal_care",
+    "phone": "+919209019634",
+    "created_at": "2025-01-26T00:00:00+00:00",
     "complaint_count": 0
   },
   {
     "id": 7,
-    "upi_id": "gautam_tailor_shop@barodabank",
-    "name": "Gautam Tailor Shop",
-    "category": "tailoring",
-    "phone": "+919416804102",
-    "created_at": "2025-09-01T00:00:00",
-    "complaint_count": 4
+    "upi_id": "riya_sarees@axis",
+    "name": "Riya Sarees",
+    "category": "pharmacy",
+    "phone": "+918284448308",
+    "created_at": "2025-03-31T00:00:00+00:00",
+    "complaint_count": 0
   },
   {
     "id": 8,
-    "upi_id": "mohan_barber_shop@barodabank",
-    "name": "Mohan Barber Shop",
-    "category": "books",
-    "phone": "+918454833168",
-    "created_at": "2025-10-04T00:00:00",
-    "complaint_count": 1
+    "upi_id": "ekta_sweets_shop@hdfc",
+    "name": "Ekta Sweets Shop",
+    "category": "recharge",
+    "phone": "+918940994192",
+    "created_at": "2025-05-20T00:00:00+00:00",
+    "complaint_count": 2
   },
   {
     "id": 9,
-    "upi_id": "anita_vegetables@axis",
-    "name": "Anita Vegetables",
-    "category": "general",
-    "phone": "+919931906533",
-    "created_at": "2025-09-22T00:00:00",
-    "complaint_count": 3
+    "upi_id": "aarav_juice_bar@sbi",
+    "name": "Aarav Juice Bar",
+    "category": "market",
+    "phone": "+918642910965",
+    "created_at": "2025-06-19T00:00:00+00:00",
+    "complaint_count": 0
   },
   {
     "id": 10,
-    "upi_id": "neha_beauty_salon@icici",
-    "name": "Neha Beauty Salon",
-    "category": "dairy",
-    "phone": "+918045170732",
-    "created_at": "2025-10-11T00:00:00",
+    "upi_id": "mohan_coffee_house@barodabank",
+    "name": "Mohan Coffee House",
+    "category": "cafe",
+    "phone": "+919594327693",
+    "created_at": "2025-05-22T00:00:00+00:00",
     "complaint_count": 1
   },
   {
     "id": 11,
-    "upi_id": "neha_beauty_salon@sbi",
-    "name": "Neha Beauty Salon",
-    "category": "electronics",
-    "phone": "+918491648746",
-    "created_at": "2025-02-04T00:00:00",
-    "complaint_count": 0
-  },
-  {
-    "id": 12,
-    "upi_id": "yashica_beauty_salon@okhdfcbank",
-    "name": "Yashica Beauty Salon",
-    "category": "clothing",
-    "phone": "+918511111062",
-    "created_at": "2025-05-23T00:00:00",
-    "complaint_count": 3
-  },
-  {
-    "id": 13,
-    "upi_id": "maanav_tea_stall@icici",
-    "name": "Maanav Tea Stall",
-    "category": "beverages",
-    "phone": "+919015053308",
-    "created_at": "2025-05-05T00:00:00",
-    "complaint_count": 3
-  },
-  {
-    "id": 14,
-    "upi_id": "harish_coffee_house@sbi",
-    "name": "Harish Coffee House",
-    "category": "books",
-    "phone": "+918760848239",
-    "created_at": "2025-08-05T00:00:00",
-    "complaint_count": 3
-  },
-  {
-    "id": 15,
-    "upi_id": "yashica_electronics@hdfc",
-    "name": "Yashica Electronics",
-    "category": "cafe",
-    "phone": "+918130164727",
-    "created_at": "2025-07-26T00:00:00",
+    "upi_id": "chanchal_hardware_store@axis",
+    "name": "Chanchal Hardware Store",
+    "category": "dairy",
+    "phone": "+918437221893",
+    "created_at": "2025-06-25T00:00:00+00:00",
     "complaint_count": 2
   },
   {
-    "id": 16,
-    "upi_id": "neha_fashion_boutique@icici",
-    "name": "Neha Fashion Boutique",
-    "category": "market",
-    "phone": "+918963390270",
-    "created_at": "2025-03-13T00:00:00",
-    "complaint_count": 3
-  },
-  {
-    "id": 17,
-    "upi_id": "mohan_mobile_repair@axis",
-    "name": "Mohan Mobile Repair",
+    "id": 12,
+    "upi_id": "dishant_electronics@barodabank",
+    "name": "Dishant Electronics",
     "category": "beauty",
-    "phone": "+918951616026",
-    "created_at": "2025-10-09T00:00:00",
-    "complaint_count": 0
+    "phone": "+919362115473",
+    "created_at": "2025-04-19T00:00:00+00:00",
+    "complaint_count": 2
   },
   {
-    "id": 18,
-    "upi_id": "priya_vegetables_market@hdfc",
-    "name": "Priya Vegetables Market",
-    "category": "grocery",
-    "phone": "+918200280283",
-    "created_at": "2025-05-02T00:00:00",
+    "id": 13,
+    "upi_id": "rajesh_coaching_center@hdfc",
+    "name": "Rajesh Coaching Center",
+    "category": "tailoring",
+    "phone": "+919368190554",
+    "created_at": "2025-03-09T00:00:00+00:00",
     "complaint_count": 1
   },
   {
+    "id": 14,
+    "upi_id": "mahika_vegetables_market@paytm",
+    "name": "Mahika Vegetables Market",
+    "category": "grocery",
+    "phone": "+918240247332",
+    "created_at": "2025-01-20T00:00:00+00:00",
+    "complaint_count": 1
+  },
+  {
+    "id": 15,
+    "upi_id": "amit_tea_stall@hdfc",
+    "name": "Amit Tea Stall",
+    "category": "market",
+    "phone": "+918318028987",
+    "created_at": "2025-04-21T00:00:00+00:00",
+    "complaint_count": 1
+  },
+  {
+    "id": 16,
+    "upi_id": "janya_electronics@hdfc",
+    "name": "Janya Electronics",
+    "category": "vegetables",
+    "phone": "+918451135926",
+    "created_at": "2025-06-24T00:00:00+00:00",
+    "complaint_count": 1
+  },
+  {
+    "id": 17,
+    "upi_id": "harish_coaching_center@hdfc",
+    "name": "Harish Coaching Center",
+    "category": "market",
+    "phone": "+919898664814",
+    "created_at": "2025-04-15T00:00:00+00:00",
+    "complaint_count": 4
+  },
+  {
+    "id": 18,
+    "upi_id": "anita_recharge_shop@axis",
+    "name": "Anita Recharge Shop",
+    "category": "recharge",
+    "phone": "+919892826888",
+    "created_at": "2025-04-16T00:00:00+00:00",
+    "complaint_count": 0
+  },
+  {
     "id": 19,
-    "upi_id": "ekta_fashion_boutique@axis",
-    "name": "Ekta Fashion Boutique",
-    "category": "food",
-    "phone": "+919937981306",
-    "created_at": "2025-01-31T00:00:00",
+    "upi_id": "krishna_books_store@hdfc",
+    "name": "Krishna Books Store",
+    "category": "education",
+    "phone": "+919855563363",
+    "created_at": "2025-07-08T00:00:00+00:00",
     "complaint_count": 1
   },
   {
     "id": 20,
-    "upi_id": "rajesh_pharmacy@axis",
-    "name": "Rajesh Pharmacy",
-    "category": "general",
-    "phone": "+918612568057",
-    "created_at": "2025-08-05T00:00:00",
+    "upi_id": "rajiv_biryani_house@icici",
+    "name": "Rajiv Biryani House",
+    "category": "electronics",
+    "phone": "+919843814971",
+    "created_at": "2025-05-01T00:00:00+00:00",
+    "complaint_count": 1
+  },
+  {
+    "id": 21,
+    "upi_id": "falak_sweets_shop@hdfc",
+    "name": "Falak Sweets Shop",
+    "category": "repair",
+    "phone": "+918478724683",
+    "created_at": "2025-01-07T00:00:00+00:00",
+    "complaint_count": 1
+  },
+  {
+    "id": 22,
+    "upi_id": "elijah_beauty_salon@barodabank",
+    "name": "Elijah Beauty Salon",
+    "category": "pharmacy",
+    "phone": "+918754080568",
+    "created_at": "2025-06-14T00:00:00+00:00",
     "complaint_count": 4
+  },
+  {
+    "id": 23,
+    "upi_id": "riya_kirana_store@hdfc",
+    "name": "Riya Kirana Store",
+    "category": "cafe",
+    "phone": "+919883425645",
+    "created_at": "2025-03-08T00:00:00+00:00",
+    "complaint_count": 1
+  },
+  {
+    "id": 24,
+    "upi_id": "warda_coffee_house@sbi",
+    "name": "Warda Coffee House",
+    "category": "personal_care",
+    "phone": "+918933218566",
+    "created_at": "2025-03-30T00:00:00+00:00",
+    "complaint_count": 2
+  },
+  {
+    "id": 25,
+    "upi_id": "veer_biryani_house@icici",
+    "name": "Veer Biryani House",
+    "category": "beverages",
+    "phone": "+918408191062",
+    "created_at": "2025-03-07T00:00:00+00:00",
+    "complaint_count": 0
   }
 ]

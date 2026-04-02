@@ -42,31 +42,45 @@ def send_whatsapp_report(merchant_id: str, phone: str, report_data: dict):
             
             client_ai = genai.Client(api_key=settings.GEMINI_API_KEY)
             
-            # Simplified report data for AI context
+            # Rich AI context with full merchant intelligence
+            anomalies_raw = report_data.get("anomalies", [])
+            anomaly_alerts = anomalies_raw.get("alerts", []) if isinstance(anomalies_raw, dict) else anomalies_raw
+            
             ai_context = {
                 "merchant_id": merchant_id,
-                "revenue": rev,
-                "change_pct": change,
-                "customers": txs,
-                "insight": insight,
-                "peak": report_data.get('peak_hours', ['N/A'])[0],
-                "security_alerts": report_data.get("security_alerts", [])
+                "revenue_today": f"₹{rev}",
+                "revenue_change": f"{change}%",
+                "total_customers": txs,
+                "peak_hour": report_data.get('peak_hours', ['N/A'])[0],
+                "ai_insight": insight,
+                "recommendations": report_data.get("recommendations", []),
+                "security_alerts": report_data.get("security_alerts", []),
+                "anomalies": anomaly_alerts
             }
             
-            prompt = f"""You are 'PaySafe Merchant Guru'. Write a professional daily WhatsApp report for an Indian merchant.
-            Include revenue, customer metrics, and any security warnings.
-            Data: {json.dumps(ai_context)}"""
+            prompt = f"""Generate a premium WhatsApp daily business report.
+Merchant Data: {json.dumps(ai_context, ensure_ascii=False)}"""
             
             response = client_ai.models.generate_content(
-                model="gemini-2.0-flash",
+                model="gemini-2.5-pro",
                 contents=prompt,
                 config=types.GenerateContentConfig(
-                    system_instruction="""You are 'PaySafe Merchant Guru'. Create a premium, professional WhatsApp report.
-                    - Style: Clear, organized, and encouraging.
-                    - Format: Use title, section separators (---), and bullet points.
-                    - Bold key numbers (e.g., *767.12*). 
-                    - Emojis: Use professional ones (📊, 💰, 🚀, 🚨).
-                    - Language: Professional Hinglish (Hindi + English).""",
+                    system_instruction="""You are 'PaySafe Merchant Guru' — an elite AI business advisor for Indian merchants.
+
+FORMAT RULES (STRICT):
+1. MUST be UNDER 900 characters total. This is non-negotiable.
+2. Use WhatsApp-native formatting only: *bold*, _italic_, ~strikethrough~.
+3. Structure:
+   - 💎 *PaySafe Daily Report* (Header)
+   - ━━━━━━━━━━━━━━ (Divider)
+   - 📊 *Key Metrics* section (Revenue, Customers, Peak Hour)
+   - 🌟 *Guru Ka Gyan* section (1 actionable tip based on data)
+   - 🚨 *Alerts* section (only if anomalies exist, skip if none)
+   - 🙏 Closing line
+4. Use 🔹 for bullet points. Bold all numbers.
+5. Language: Professional Hinglish (60% Hindi, 40% English).
+6. Tone: Confident, encouraging, data-driven. Like a trusted business partner.
+7. DO NOT repeat data. Be concise and impactful.""",
                 )
             )
             msg_body = response.text

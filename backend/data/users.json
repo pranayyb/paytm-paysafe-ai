@@ -1,8 +1,18 @@
 [
   {
+    "id": 0,
+    "upi_id": "pranay@sbi",
+    "name": "Pranay",
+    "created_at": "2025-01-01T00:00:00",
+    "is_merchant": false,
+    "has_disputes": false,
+    "dispute_count": 0,
+    "complaint_count": 0
+  },
+  {
     "id": 1,
     "upi_id": "widisha@sbi",
-    "name": "Widisha D\u2019Alia",
+    "name": "Widisha Hora",
     "created_at": "2025-01-13T00:00:00",
     "is_merchant": false,
     "has_disputes": false,
@@ -12,7 +22,7 @@
   {
     "id": 2,
     "upi_id": "neha@icici",
-    "name": "Neha Chana",
+    "name": "Neha Sarkar",
     "created_at": "2025-02-22T00:00:00",
     "is_merchant": false,
     "has_disputes": false,
@@ -22,7 +32,7 @@
   {
     "id": 3,
     "upi_id": "amit@barodabank",
-    "name": "Amit Dash",
+    "name": "Amit Kanda",
     "created_at": "2025-08-05T00:00:00",
     "is_merchant": false,
     "has_disputes": true,
@@ -32,7 +42,7 @@
   {
     "id": 4,
     "upi_id": "warda@barodabank",
-    "name": "Warda Rastogi",
+    "name": "Warda Banerjee",
     "created_at": "2025-01-14T00:00:00",
     "is_merchant": false,
     "has_disputes": false,
@@ -42,7 +52,7 @@
   {
     "id": 5,
     "upi_id": "widisha@hdfc",
-    "name": "Widisha Gala",
+    "name": "Widisha Kohli",
     "created_at": "2025-10-07T00:00:00",
     "is_merchant": false,
     "has_disputes": false,
@@ -52,7 +62,7 @@
   {
     "id": 6,
     "upi_id": "chanchal@okhdfcbank",
-    "name": "Chanchal Bobal",
+    "name": "Chanchal Garde",
     "created_at": "2025-01-04T00:00:00",
     "is_merchant": false,
     "has_disputes": false,
@@ -62,7 +72,7 @@
   {
     "id": 7,
     "upi_id": "aryan@axis",
-    "name": "Aryan Kar",
+    "name": "Aryan Ghosh",
     "created_at": "2025-06-24T00:00:00",
     "is_merchant": false,
     "has_disputes": false,
@@ -72,7 +82,7 @@
   {
     "id": 8,
     "upi_id": "gautam@okhdfcbank",
-    "name": "Gautam Arya",
+    "name": "Gautam Char",
     "created_at": "2025-02-22T00:00:00",
     "is_merchant": false,
     "has_disputes": true,
@@ -82,7 +92,7 @@
   {
     "id": 9,
     "upi_id": "janya@okhdfcbank",
-    "name": "Janya Bhat",
+    "name": "Janya Vasa",
     "created_at": "2025-01-23T00:00:00",
     "is_merchant": false,
     "has_disputes": false,
@@ -92,7 +102,7 @@
   {
     "id": 10,
     "upi_id": "sunita@axis",
-    "name": "Sunita Mannan",
+    "name": "Sunita Sachar",
     "created_at": "2025-02-10T00:00:00",
     "is_merchant": false,
     "has_disputes": false,
@@ -102,7 +112,7 @@
   {
     "id": 11,
     "upi_id": "chanchal@icici",
-    "name": "Chanchal Chhabra",
+    "name": "Chanchal Sachdev",
     "created_at": "2025-02-05T00:00:00",
     "is_merchant": false,
     "has_disputes": true,
@@ -112,7 +122,7 @@
   {
     "id": 12,
     "upi_id": "yashica@icici",
-    "name": "Yashica Bhalla",
+    "name": "Yashica Khanna",
     "created_at": "2025-02-21T00:00:00",
     "is_merchant": false,
     "has_disputes": false,
@@ -122,7 +132,7 @@
   {
     "id": 13,
     "upi_id": "widisha@okhdfcbank",
-    "name": "Widisha Kumer",
+    "name": "Widisha Pant",
     "created_at": "2025-03-25T00:00:00",
     "is_merchant": false,
     "has_disputes": false,
@@ -132,7 +142,7 @@
   {
     "id": 14,
     "upi_id": "elijah@okhdfcbank",
-    "name": "Elijah Agarwal",
+    "name": "Elijah Mannan",
     "created_at": "2025-02-06T00:00:00",
     "is_merchant": false,
     "has_disputes": false,
@@ -142,7 +152,7 @@
   {
     "id": 15,
     "upi_id": "maanav@hdfc",
-    "name": "Maanav Tailor",
+    "name": "Maanav Goyal",
     "created_at": "2025-05-06T00:00:00",
     "is_merchant": false,
     "has_disputes": false,
@@ -152,7 +162,7 @@
   {
     "id": 16,
     "upi_id": "mohan@hdfc",
-    "name": "Mohan Deshpande",
+    "name": "Mohan Edwin",
     "created_at": "2025-10-13T00:00:00",
     "is_merchant": false,
     "has_disputes": false,
@@ -162,7 +172,7 @@
   {
     "id": 17,
     "upi_id": "nirja@sbi",
-    "name": "Nirja Bajaj",
+    "name": "Nirja Koshy",
     "created_at": "2025-04-28T00:00:00",
     "is_merchant": false,
     "has_disputes": false,
@@ -172,7 +182,7 @@
   {
     "id": 18,
     "upi_id": "divya@okhdfcbank",
-    "name": "Divya Sarin",
+    "name": "Divya Pandya",
     "created_at": "2025-02-03T00:00:00",
     "is_merchant": false,
     "has_disputes": false,
@@ -182,7 +192,7 @@
   {
     "id": 19,
     "upi_id": "mahika@hdfc",
-    "name": "Mahika Taneja",
+    "name": "Mahika Sunder",
     "created_at": "2025-06-11T00:00:00",
     "is_merchant": false,
     "has_disputes": false,
@@ -192,7 +202,7 @@
   {
     "id": 20,
     "upi_id": "divya@hdfc",
-    "name": "Divya Vig",
+    "name": "Divya Biswas",
     "created_at": "2025-08-23T00:00:00",
     "is_merchant": false,
     "has_disputes": false,
@@ -202,7 +212,7 @@
   {
     "id": 21,
     "upi_id": "neha@hdfc",
-    "name": "Neha Sastry",
+    "name": "Neha Balakrishnan",
     "created_at": "2025-10-15T00:00:00",
     "is_merchant": false,
     "has_disputes": false,
@@ -212,7 +222,7 @@
   {
     "id": 22,
     "upi_id": "chanchal@axis",
-    "name": "Chanchal Bhatt",
+    "name": "Chanchal Johal",
     "created_at": "2025-10-26T00:00:00",
     "is_merchant": false,
     "has_disputes": false,
@@ -222,7 +232,7 @@
   {
     "id": 23,
     "upi_id": "vikram@barodabank",
-    "name": "Vikram Bhatnagar",
+    "name": "Vikram Mitra",
     "created_at": "2025-09-10T00:00:00",
     "is_merchant": false,
     "has_disputes": true,
@@ -232,7 +242,7 @@
   {
     "id": 24,
     "upi_id": "widisha@icici",
-    "name": "Widisha Tara",
+    "name": "Widisha Randhawa",
     "created_at": "2025-08-05T00:00:00",
     "is_merchant": false,
     "has_disputes": false,
@@ -242,7 +252,7 @@
   {
     "id": 25,
     "upi_id": "divya@barodabank",
-    "name": "Divya Padmanabhan",
+    "name": "Divya Kaur",
     "created_at": "2025-08-28T00:00:00",
     "is_merchant": false,
     "has_disputes": false,

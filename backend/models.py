@@ -8,6 +8,7 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     upi_id = Column(String, unique=True, index=True)
     name = Column(String)
+    phone = Column(String, nullable=True)
     created_at = Column(DateTime(timezone=True), default=func.now())
     is_merchant = Column(Boolean, default=False)
     has_disputes = Column(Boolean, default=False)

@@ -5,15 +5,38 @@ from schemas import ScamCheckRequest, ScamCheckResponse, QRScanRequest
 from services.scam_shield import analyze_message, get_all_patterns
 from services.trust_score import calculate_trust_score
 from services.qr_scanner import scan_qr
-from services.voice import process_voice_payment
+from services.voice import process_voice_payment, process_voice_command_with_agent
+from models import Transaction, User
+import tempfile
+import os
+from pydantic import BaseModel
+from google import genai
+from config import settings
+from datetime import datetime, timezone
+from gtts import gTTS
+import time
+
+from pydantic import BaseModel
 
 router = APIRouter(tags=["User Protection"])
+
+# ─── Request Models ───
+class VoiceConfirmationRequest(BaseModel):
+    """Step 2: Confirm pending payment by transaction_id"""
+    sender: str  # Sender UPI ID (e.g., "pranay@sbi")
+    transaction_id: int
+    confirmation_text: str = "yes"  # yes/no/haan/cancel
+
+class VerifyPinRequest(BaseModel):
+    """Step 3: Verify PIN and execute payment by transaction_id"""
+    transaction_id: int
+    pin: str
 
 # ─── Endpoints ───
 
 @router.post("/scam/check", response_model=ScamCheckResponse,
-             summary="Analyze a message for scam patterns",
-             description="Paste a suspicious message and get AI-powered scam analysis in Hindi.")
+            summary="Analyze a message for scam patterns",
+            description="Paste a suspicious message and get AI-powered scam analysis in Hindi.")
 async def check_scam(request: ScamCheckRequest):
     ctx = request.payment_context.model_dump() if request.payment_context else None
     return await analyze_message(request.message, ctx)
@@ -35,20 +58,281 @@ def get_trust_badge(upi_id: str, db: Session = Depends(get_db)):
 
 
 @router.post("/qr/scan",
-             summary="Scan and analyze a QR code",
-             description="Deep QR DNA scan: checks account age, name match, complaints, amount, velocity, and location.")
+            summary="Scan and analyze a QR code",
+            description="Deep QR DNA scan: checks account age, name match, complaints, amount, velocity, and location.")
 def scan_qr_code(request: QRScanRequest, db: Session = Depends(get_db)):
     loc = request.user_location.model_dump() if request.user_location else None
     return scan_qr(db, request.qr_data, loc)
 
 
 @router.post("/voice/pay",
-             summary="Process voice payment command",
-             description="Upload Hindi audio → transcription → intent parsing → trust check → voice response.")
+            summary="Process voice payment command",
+            description="Upload Hindi audio → transcription → intent parsing → trust check → voice response.")
 async def voice_payment(audio_file: UploadFile = File(...), db: Session = Depends(get_db)):
     if audio_file.content_type and "audio" not in audio_file.content_type and "octet" not in audio_file.content_type:
         raise HTTPException(status_code=400, detail="Please upload an audio file (WAV/MP3).")
     audio_bytes = await audio_file.read()
     if len(audio_bytes) == 0:
         raise HTTPException(status_code=400, detail="Empty audio file received.")
-    return process_voice_payment(audio_bytes, db)
+    
+    try:
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as tmp_file:
+            tmp_file.write(audio_bytes)
+            tmp_file_path = tmp_file.name
+        result = process_voice_payment(tmp_file_path, db)
+        try:
+            os.unlink(tmp_file_path)
+        except:
+            pass
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Voice payment processing failed: {str(e)}")
+
+
+@router.post("/voice/confirm",
+            summary="Confirm pending voice payment - Step 2",
+            description="User confirms payment by transaction_id. Asks for PIN.")
+async def confirm_voice_payment(
+    request: VoiceConfirmationRequest,
+    db: Session = Depends(get_db)
+):
+    """
+    Step 2 of voice payment: User confirms payment.
+    Takes transaction_id and asks for PIN.
+    
+    Args:
+        request: Contains sender, transaction_id, confirmation_text
+        db: Database session
+    
+    Returns:
+        PIN request message and transaction details
+    """
+    try:
+        sender_upi = request.sender
+        transaction_id = request.transaction_id
+        confirmation_text = request.confirmation_text
+        
+        # Fetch the transaction
+        transaction = db.query(Transaction).filter(
+            Transaction.id == transaction_id,
+            Transaction.status == "PENDING_CONFIRMATION"
+        ).first()
+        
+        if not transaction:
+            return {
+                "status": "error",
+                "message": f"🚨 Transaction {transaction_id} nahi mila ya already processed hai"
+            }
+        
+        # Verify sender matches
+        if transaction.sender_upi_id.lower() != sender_upi.lower():
+            return {
+                "status": "error",
+                "message": f"🚨 Sender verification failed. Transaction sender: {transaction.sender_upi_id}"
+            }
+        
+        # Check if user confirmed
+        if confirmation_text.lower() not in ["yes", "haan", "ok", "confirm"]:
+            transaction.status = "CANCELLED"
+            db.commit()
+            return {
+                "status": "cancelled",
+                "message": "❌ Payment cancelled",
+                "transaction_id": transaction_id
+            }
+        
+        # Get receiver info for PIN message
+        receiver = db.query(User).filter(
+            User.upi_id == transaction.receiver_upi_id
+        ).first()
+        
+        # Get sender info to include in response
+        sender = db.query(User).filter(
+            User.upi_id == transaction.sender_upi_id
+        ).first()
+        
+        # Generate PIN request message using LLM
+        try:
+            client = genai.Client(api_key=settings.GEMINI_API_KEY)
+            pin_prompt = f"""Generate ONE single, natural Hindi/Hinglish message asking the sender for 4-digit PIN. Must be suitable for text-to-speech.
+
+Sender: {sender.name if sender else 'Pranay'}
+Receiver: {receiver.name if receiver else 'Someone'}
+Amount: ₹{transaction.amount}
+
+REQUIREMENTS:
+- ONLY ONE sentence, no bullet points, no lists, no markdown
+- Ask ONLY the sender for PIN, NOT the receiver
+- Keep it SHORT (under 10 words)
+- Suitable for voice TTS output
+- NO special characters or formatting
+- Be friendly and conversational
+
+Good examples:
+Apni 4-digit PIN boldo
+PIN dedo {sender.name.split()[0] if sender else 'beta'}
+4 digit PIN sunao"""
+            
+            pin_response = client.models.generate_content(
+                model="gemini-2.0-flash",
+                contents=pin_prompt,
+                config=genai.types.GenerateContentConfig(
+                    system_instruction="You are a friendly payment assistant. Always respond with EXACTLY ONE sentence, no lists, no bullet points, no markdown formatting."
+                )
+            )
+            pin_message = pin_response.text.strip() if pin_response.text else "4-digit PIN boldo"
+        except Exception as e:
+            print(f"⚠️ PIN message generation failed: {e}")
+            pin_message = "Apni 4-digit PIN sun ao"
+        
+        # Generate TTS response
+        voice_url = None
+        if pin_message:
+            try:
+                tts = gTTS(text=pin_message, lang='hi')
+                filename = f"response_{int(time.time())}.mp3"
+                filepath = f"/tmp/{filename}"
+                tts.save(filepath)
+                voice_url = f"/audio/{filename}"
+                print(f"✅ Voice response generated: {filename}")
+            except Exception as e:
+                print(f"⚠️ TTS generation failed: {e}")
+        
+        return {
+            "status": "pin_required",
+            "transaction_id": transaction_id,
+            "sender_upi": transaction.sender_upi_id,
+            "sender_name": sender.name if sender else "Pranay",
+            "receiver_name": receiver.name if receiver else "Unknown",
+            "receiver_upi": transaction.receiver_upi_id,
+            "amount": transaction.amount,
+            "message": f"✅ Payment ready: ₹{transaction.amount} {receiver.name if receiver else 'receiver'} ko",
+            "response": pin_message,
+            "voice_response_url": voice_url,
+            "next_step": "verify_pin"
+        }
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Confirmation failed: {str(e)}")
+
+
+@router.post("/voice/verify-pin",
+            summary="Verify PIN and execute payment - Step 3",
+            description="User enters PIN. Verifies and executes the payment.")
+async def verify_pin_and_execute(
+    request: VerifyPinRequest,
+    db: Session = Depends(get_db)
+):
+    """
+    Step 3 of voice payment: User verifies PIN and payment is executed.
+    
+    Args:
+        request: Contains transaction_id, pin
+        db: Database session
+    
+    Returns:
+        Payment success/failure response
+    """
+    try:
+        transaction_id = request.transaction_id
+        pin = request.pin
+        
+        # Verify PIN (simple validation - in production, use secure PIN verification)
+        # For demo: accept any 4-digit PIN
+        if not pin or len(pin) != 4 or not pin.isdigit():
+            return {
+                "status": "error",
+                "message": "❌ PIN galat hai. 4-digit PIN dedo"
+            }
+        
+        # Find the transaction
+        transaction = db.query(Transaction).filter(
+            Transaction.id == transaction_id,
+            Transaction.status == "PENDING_CONFIRMATION"
+        ).first()
+        
+        if not transaction:
+            return {
+                "status": "error",
+                "message": f"🚨 Transaction {transaction_id} nahi mila ya already processed hai"
+            }
+        
+        # Transaction is confirmed after PIN verification
+        transaction.status = "SUCCESS"
+        db.commit()
+        
+        # Get receiver info for success message
+        receiver = db.query(User).filter(
+            User.upi_id == transaction.receiver_upi_id
+        ).first()
+        
+        # Get sender info to include in response
+        sender = db.query(User).filter(
+            User.upi_id == transaction.sender_upi_id
+        ).first()
+        
+        # Generate success message using LLM
+        try:
+            client = genai.Client(api_key=settings.GEMINI_API_KEY)
+            success_prompt = f"""Generate ONE single, natural Hindi/Hinglish message confirming successful payment. Must be suitable for text-to-speech.
+
+Receiver: {receiver.name if receiver else 'Someone'}
+Amount: ₹{transaction.amount}
+
+REQUIREMENTS:
+- ONLY ONE sentence, no bullet points, no lists, no markdown
+- Be conversational and friendly
+- Keep it SHORT (under 15 words)
+- Suitable for voice TTS output
+- NO special characters or formatting
+
+Good examples:
+Vijay, {receiver.name if receiver else 'payment'} ko {int(transaction.amount)} rupaye bhej diye!
+Success hain, paise {receiver.name if receiver else 'receiver'} ke paas chale gaye
+{int(transaction.amount)} rupaye {receiver.name if receiver else 'receiver'} ko transfer ho gaya"""
+            
+            success_response = client.models.generate_content(
+                model="gemini-2.0-flash",
+                contents=success_prompt,
+                config=genai.types.GenerateContentConfig(
+                    system_instruction="You are a friendly payment assistant. Always respond with EXACTLY ONE sentence, no lists, no bullet points, no markdown formatting."
+                )
+            )
+            success_message = success_response.text.strip() if success_response.text else f"Success! {receiver.name if receiver else 'Payment'} ko {int(transaction.amount)} rupaye transfer ho gaya"
+        except Exception as e:
+            print(f"⚠️ Success message generation failed: {e}")
+            success_message = f"Success! {receiver.name if receiver else 'Payment'} ko {int(transaction.amount)} rupaye transfer ho gaya"
+        
+        # Generate TTS response
+        voice_url = None
+        if success_message:
+            try:
+                tts = gTTS(text=success_message, lang='hi')
+                filename = f"response_{int(time.time())}.mp3"
+                filepath = f"/tmp/{filename}"
+                tts.save(filepath)
+                voice_url = f"/audio/{filename}"
+                print(f"✅ Voice response generated: {filename}")
+            except Exception as e:
+                print(f"⚠️ TTS generation failed: {e}")
+        
+        return {
+            "status": "success",
+            "message": f"✅ ₹{transaction.amount} successfully भेज दिए गए {transaction.receiver_upi_id} को!",
+            "transaction_id": transaction_id,
+            "transaction_status": "SUCCESS",
+            "amount": transaction.amount,
+            "sender_upi": transaction.sender_upi_id,
+            "sender_name": sender.name if sender else "Pranay",
+            "receiver_upi": transaction.receiver_upi_id,
+            "receiver_name": receiver.name if receiver else "Unknown",
+            "response": success_message,
+            "voice_response_url": voice_url
+        }
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"PIN verification failed: {str(e)}")

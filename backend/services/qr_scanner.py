@@ -4,6 +4,19 @@ from sqlalchemy.orm import Session
 from models import User, Merchant, Transaction
 from services.trust_score import calculate_trust_score
 import math
+import io
+import logging
+
+logger = logging.getLogger(__name__)
+
+# Try importing QR image decoding libraries
+try:
+    from PIL import Image
+    import pyzbar.pyzbar as pyzbar
+    HAS_QR_DECODER = True
+except ImportError:
+    HAS_QR_DECODER = False
+    logger.warning("pyzbar/Pillow not installed. QR image decoding disabled. Install: pip install pyzbar Pillow")
 
 
 def scan_qr(db: Session, qr_data: str, user_location: dict = None):
@@ -199,3 +212,79 @@ def _build_response(is_safe, risk_level, badge, checks, reasons, explanation,
         "qr_details": qr_details or {},
         "trust_data": trust_data
     }
+
+
+def scan_qr_image(db: Session, image_bytes: bytes, user_location: dict = None) -> dict:
+    """
+    Decode a QR code from an image and analyze its content.
+    - If UPI QR → run through scan_qr() for UPI safety checks
+    - If regular URL → run through URL fraud analyzer
+    - If plain text → return decoded content
+    """
+    if not HAS_QR_DECODER:
+        return {
+            "error": True,
+            "message": "QR image decoding not available. Install: pip install pyzbar Pillow",
+            "decoded_data": None
+        }
+
+    try:
+        # Decode QR code from image bytes
+        img = Image.open(io.BytesIO(image_bytes))
+        qr_codes = pyzbar.decode(img)
+
+        if not qr_codes:
+            return {
+                "error": True,
+                "message": "No QR code found in the image. Please upload a clear image.",
+                "decoded_data": None
+            }
+
+        # Take the first QR code found
+        decoded_data = qr_codes[0].data.decode('utf-8')
+        qr_type = qr_codes[0].type  # e.g., 'QRCODE', 'EAN13'
+
+        logger.info(f"QR decoded: type={qr_type}, data={decoded_data[:100]}")
+
+        result = {
+            "decoded_data": decoded_data,
+            "qr_type": qr_type,
+            "total_qr_found": len(qr_codes),
+        }
+
+        # Route based on content type
+        if decoded_data.startswith("upi://pay"):
+            # UPI QR → run full UPI safety checks
+            upi_result = scan_qr(db, decoded_data, user_location)
+            result["content_type"] = "upi"
+            result["analysis"] = upi_result
+            result["message"] = "UPI QR code detected — full safety scan completed"
+
+        elif decoded_data.startswith("http://") or decoded_data.startswith("https://"):
+            # Web URL → run URL fraud ML analysis
+            from services.url_analyzer import analyze_url
+            url_result = analyze_url(decoded_data)
+            result["content_type"] = "url"
+            result["analysis"] = url_result
+            result["message"] = "URL detected in QR code — fraud analysis completed"
+
+        else:
+            # Plain text or other data
+            result["content_type"] = "text"
+            result["analysis"] = {
+                "is_safe": True,
+                "risk_level": "LOW",
+                "note": "Plain text QR code — no URL or UPI data detected"
+            }
+            result["message"] = "Plain text QR code decoded"
+
+        return result
+
+    except Exception as e:
+        logger.error(f"QR image decoding error: {e}")
+        return {
+            "error": True,
+            "message": f"Failed to decode QR image: {str(e)}",
+            "decoded_data": None
+        }
+

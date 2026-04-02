@@ -61,3 +61,30 @@ class QRScanRequest(BaseModel):
 class SendReportRequest(BaseModel):
     merchant_id: str = Field(description="Merchant's UPI ID")
     phone: str = Field("+919999999999", description="Merchant's WhatsApp phone number in E.164 format")
+
+
+# ─── URL Fraud Check Models ───
+
+class URLCheckRequest(BaseModel):
+    url: str = Field(description="The URL to analyze for phishing/fraud")
+
+
+class URLCheckResponse(BaseModel):
+    url: str = Field(description="The analyzed URL")
+    is_fraud: bool = Field(description="Whether the URL is classified as fraudulent")
+    confidence: float = Field(description="Confidence score (0-100)")
+    risk_level: str = Field(description="Risk level: Safe, Low, Medium, High, Critical")
+    risk_factors: List[str] = Field(default_factory=list, description="List of detected risk factors")
+    analysis_mode: Optional[str] = Field(None, description="Analysis method: ml or heuristic")
+    warning_hindi: Optional[str] = Field(None, description="Warning message in Hindi")
+
+
+# ─── User Feedback Models ───
+
+class FeedbackRequest(BaseModel):
+    item_type: str = Field(description="Type of item: 'url', 'scam_message', or 'qr'")
+    item_data: str = Field(description="The content that was analyzed (URL, message, QR data)")
+    correct_label: int = Field(description="Correct label: 0 = legitimate, 1 = fraudulent")
+    original_prediction: Optional[bool] = Field(None, description="What the system originally predicted")
+    user_note: Optional[str] = Field(None, description="Optional note from user about why this is correct/incorrect")
+

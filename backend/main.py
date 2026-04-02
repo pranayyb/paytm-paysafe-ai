@@ -23,6 +23,13 @@ async def lifespan(app: FastAPI):
         generate_data()
         print("✅ Synthetic data generated!")
     db.close()
+
+    # Pre-load ML fraud detection model
+    print("🧠 Loading URL fraud detection model...")
+    from services.url_analyzer import get_detector
+    get_detector()
+    print("✅ ML model loaded!")
+
     yield
 
 
@@ -61,7 +68,9 @@ def read_root():
         "status": "running",
         "docs": "/docs",
         "endpoints": {
-            "user": ["/scam/check", "/scam/patterns", "/trust/{upi_id}", "/qr/scan", "/voice/pay"],
+            "user": ["/scam/check", "/scam/patterns", "/trust/{upi_id}", "/qr/scan",
+                     "/qr/scan-image", "/url/check", "/voice/pay",
+                     "/feedback", "/feedback/stats"],
             "merchant": ["/merchant/insights", "/merchant/anomalies", "/merchant/voice-query",
                          "/merchant/send-report", "/merchant/list"]
         }

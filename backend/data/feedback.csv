@@ -1,0 +1,3 @@
+timestamp,item_type,item_data,original_prediction,correct_label,user_note
+2026-04-02T17:01:15.719688,url,http://fake-bank.xyz,True,1,definitely fraud
+2026-04-02T17:02:55.239862,url,http://fake-bank.xyz,,1,

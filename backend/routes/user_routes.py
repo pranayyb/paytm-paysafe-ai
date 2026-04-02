@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, UploadFile, File, HTTPException
 from sqlalchemy.orm import Session
 from database import get_db
 from schemas import (ScamCheckRequest, ScamCheckResponse, QRScanRequest,
-                     URLCheckRequest, URLCheckResponse, FeedbackRequest)
+                     URLCheckRequest, URLCheckResponse, FeedbackRequest,VoiceConfirmationRequest, VerifyPinRequest)
 from services.scam_shield import analyze_message, get_all_patterns
 from services.trust_score import calculate_trust_score
 from services.qr_scanner import scan_qr, scan_qr_image
@@ -16,24 +16,11 @@ from config import settings
 from datetime import datetime, timezone
 from gtts import gTTS
 import time
-
-from pydantic import BaseModel
 from services.url_analyzer import analyze_url
 from services.feedback import save_feedback, get_feedback_stats
 
 router = APIRouter(tags=["User Protection"])
 
-# ─── Request Models ───
-class VoiceConfirmationRequest(BaseModel):
-    """Step 2: Confirm pending payment by transaction_id"""
-    sender: str  # Sender UPI ID (e.g., "pranay@sbi")
-    transaction_id: int
-    confirmation_text: str = "yes"  # yes/no/haan/cancel
-
-class VerifyPinRequest(BaseModel):
-    """Step 3: Verify PIN and execute payment by transaction_id"""
-    transaction_id: int
-    pin: str
 
 # ─── Endpoints ───
 
@@ -99,17 +86,6 @@ async def confirm_voice_payment(
     request: VoiceConfirmationRequest,
     db: Session = Depends(get_db)
 ):
-    """
-    Step 2 of voice payment: User confirms payment.
-    Takes transaction_id and asks for PIN.
-    
-    Args:
-        request: Contains sender, transaction_id, confirmation_text
-        db: Database session
-    
-    Returns:
-        PIN request message and transaction details
-    """
     try:
         sender_upi = request.sender
         transaction_id = request.transaction_id
@@ -228,22 +204,10 @@ async def verify_pin_and_execute(
     request: VerifyPinRequest,
     db: Session = Depends(get_db)
 ):
-    """
-    Step 3 of voice payment: User verifies PIN and payment is executed.
-    
-    Args:
-        request: Contains transaction_id, pin
-        db: Database session
-    
-    Returns:
-        Payment success/failure response
-    """
     try:
         transaction_id = request.transaction_id
         pin = request.pin
-        
-        # Verify PIN (simple validation - in production, use secure PIN verification)
-        # For demo: accept any 4-digit PIN
+
         if not pin or len(pin) != 4 or not pin.isdigit():
             return {
                 "status": "error",

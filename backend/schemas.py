@@ -88,3 +88,15 @@ class FeedbackRequest(BaseModel):
     original_prediction: Optional[bool] = Field(None, description="What the system originally predicted")
     user_note: Optional[str] = Field(None, description="Optional note from user about why this is correct/incorrect")
 
+
+# ─── Request Models ───
+class VoiceConfirmationRequest(BaseModel):
+    """Step 2: Confirm pending payment by transaction_id"""
+    sender: str  # Sender UPI ID (e.g., "pranay@sbi")
+    transaction_id: int
+    confirmation_text: str = "yes"  # yes/no/haan/cancel
+
+class VerifyPinRequest(BaseModel):
+    """Step 3: Verify PIN and execute payment by transaction_id"""
+    transaction_id: int
+    pin: str

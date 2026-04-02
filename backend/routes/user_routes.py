@@ -57,19 +57,31 @@ def scan_qr_code(request: QRScanRequest, db: Session = Depends(get_db)):
 
 @router.post("/voice/pay",
             summary="Process voice payment command",
-            description="Upload Hindi audio → transcription → intent parsing → trust check → voice response.")
+            description="Upload Hindi audio (MP3/WAV/MP4/OGG) → transcription → intent parsing → trust check → voice response.")
 async def voice_payment(audio_file: UploadFile = File(...), db: Session = Depends(get_db)):
-    if audio_file.content_type and "audio" not in audio_file.content_type and "octet" not in audio_file.content_type:
-        raise HTTPException(status_code=400, detail="Please upload an audio file (WAV/MP3).")
+    # Support common formats including WhatsApp (.mp4 audio, .ogg)
+    allowed_extensions = {".mp3", ".wav", ".m4a", ".mp4", ".ogg", ".aac"}
+    file_ext = os.path.splitext(audio_file.filename)[1].lower() if audio_file.filename else ".mp3"
+    
+    if file_ext not in allowed_extensions:
+        # Fallback check on content_type if extension is missing
+        if audio_file.content_type and "audio" not in audio_file.content_type and "video/mp4" not in audio_file.content_type:
+            raise HTTPException(status_code=400, detail=f"Unsupported format: {file_ext}. Use MP3, WAV, or MP4.")
+
     audio_bytes = await audio_file.read()
     if len(audio_bytes) == 0:
         raise HTTPException(status_code=400, detail="Empty audio file received.")
     
     try:
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as tmp_file:
+        # Use the correct extension for the temporary file
+        suffix = file_ext if file_ext in allowed_extensions else ".mp3"
+        with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp_file:
             tmp_file.write(audio_bytes)
             tmp_file_path = tmp_file.name
+        
+        # Pass to service for processing
         result = process_voice_payment(tmp_file_path, db)
+        
         try:
             os.unlink(tmp_file_path)
         except:

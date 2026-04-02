@@ -91,40 +91,32 @@ def _keyword_analysis(message: str, payment_context: dict = None):
 async def _llm_analysis(message: str, payment_context: dict = None):
     """Use Google Gemini with structured output to analyze the message for scam patterns."""
     try:
-        import google.generativeai as genai
-        genai.configure(api_key=settings.GEMINI_API_KEY)
+        from google import genai
+        from google.genai import types
+        
+        client = genai.Client(api_key=settings.GEMINI_API_KEY)
 
         system_prompt = """You are PaySafe AI, an expert Indian UPI scam detector. 
                         You analyze messages in Hindi/Hinglish/English for fraud patterns common in India.
-
-                        Identify the scam pattern and provide a warning in Hindi.
-
-                        Common Indian scam types: electricity_scam, kyc_scam, lottery_scam, emergency_scam, 
-                        refund_scam, fake_delivery, otp_scam, investment_scam, job_scam, loan_scam, 
-                        police_threat, rbi_impersonation, tech_support_scam, sim_swap_scam, romance_scam, 
-                        fake_upi_app, cashback_scam, income_tax_scam, custom_duty_scam"""
+                        Identify the scam pattern and provide a warning in Hindi."""
 
         user_msg = f"Analyze this message for scam: \"{message}\""
         if payment_context:
             user_msg += f"\nPayment context: amount=₹{payment_context.get('amount')}, receiver={payment_context.get('receiver_upi')}"
 
-        client = genai.Client()
         response = client.models.generate_content(
-            model="gemini-1.5-flash",
+            model="gemini-2.0-flash",
             contents=user_msg,
-            config={
-                "response_mime_type": "application/json",
-                "response_json_schema": ScamAnalysisResponse.model_json_schema(),
-            },
-            system_instruction=system_prompt,
+            config=types.GenerateContentConfig(
+                response_mime_type="application/json",
+                response_schema=ScamAnalysisResponse,
+                system_instruction=system_prompt,
+            )
         )
         
-        # Parse structured response using Pydantic
-        result = ScamAnalysisResponse.model_validate_json(response.text)
-        return result.model_dump()
+        return response.parsed.model_dump()
 
     except Exception as e:
-        # Fallback to keyword analysis if LLM fails
         print(f"[ScamShield] LLM failed ({e}), falling back to keyword analysis")
         return None
 

@@ -4,6 +4,8 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func as sql_func
 from models import Transaction, Merchant, User
 import statistics
+import json
+from config import settings
 from pytz import timezone as tz
 
 
@@ -341,6 +343,46 @@ def get_insights(db: Session, merchant_upi_id: str, period: str = "week"):
             "category": merchant.category,
             "upi_id": merchant.upi_id
         }
+
+    # ─── Final AI Consultant Logic ───
+    if settings.GEMINI_API_KEY and settings.GEMINI_API_KEY != "your_gemini_key_here":
+        try:
+            from google import genai
+            from google.genai import types
+            
+            client = genai.Client(api_key=settings.GEMINI_API_KEY)
+            
+            summary_for_ai = {
+                "period": period,
+                "revenue": today_revenue,
+                "change": change_pct,
+                "total_customers": total_customers,
+                "repeat_pct": repeat_pct,
+                "peak_hours": peak_hours,
+                "anomalies": anomalies["anomalies"]
+            }
+            
+            prompt = f"""You are 'PaySafe Merchant Guru', a professional business consultant in India.
+            Analyze this merchant's data and provide:
+            1. A concise 'llm_insight' (Hindi/English mix)
+            2. 3 actionable 'recommendations' to grow revenue or reduce fraud.
+            Data: {json.dumps(summary_for_ai)}"""
+            
+            response = client.models.generate_content(
+                model="gemini-2.0-flash",
+                contents=prompt,
+                config=types.GenerateContentConfig(
+                    response_mime_type="application/json",
+                    system_instruction="You help Indian merchants succeed by providing smart, culturally relevant business advice.",
+                )
+            )
+            
+            ai_data = json.loads(response.text)
+            if "llm_insight" in ai_data: llm_insight = ai_data["llm_insight"]
+            if "recommendations" in ai_data: recommendations = ai_data["recommendations"]
+            
+        except Exception as e:
+            print(f"[MerchantGuru] Gemini failed: {e}")
 
     return {
         "merchant": merchant_info,

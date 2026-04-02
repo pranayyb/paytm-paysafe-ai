@@ -1,33 +1,65 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   StyleSheet, Text, View, TouchableOpacity,
-  StatusBar, Animated,
+  StatusBar, Animated, AppState,
 } from 'react-native';
+import {
+  Camera,
+  useCameraDevice,
+  useCameraPermission,
+  useCodeScanner,
+} from 'react-native-vision-camera';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useNavigation, useRoute, useIsFocused } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { HomeStackParamList } from '@navigation/types';
 import { Colors, Typography, Spacing } from '@theme';
 
-// Mock QR payloads that simulate real Paytm QR scans
-const MOCK_QR_RESULTS = [
-  { upi: 'zomato@icici', name: 'Zomato' },
-  { upi: 'swiggy@ybl', name: 'Swiggy' },
-  { upi: 'merchant@paytm', name: 'Local Store' },
-  { upi: 'petrol@okaxis', name: 'HP Petrol Pump' },
-];
+function parseUpiQR(value: string): { upi: string; name: string } | null {
+  try {
+    if (value.startsWith('upi://')) {
+      const url = new URL(value);
+      const pa = url.searchParams.get('pa');
+      const pn = url.searchParams.get('pn');
+      if (pa) return { upi: pa, name: pn ?? pa };
+    }
+    // Plain UPI ID (e.g. merchant@paytm)
+    if (/^[\w.\-]+@[\w]+$/.test(value)) {
+      return { upi: value, name: value };
+    }
+  } catch {}
+  return null;
+}
 
 export default function QRScannerScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<HomeStackParamList>>();
   const route = useRoute();
   const returnTo = (route.params as { returnTo?: string } | undefined)?.returnTo ?? 'Home';
-  const [scanning, setScanning] = useState(false);
   const [torchOn, setTorchOn] = useState(false);
   const [scanned, setScanned] = useState(false);
+  const scannedRef = useRef(false);
   const scanLineAnim = useRef(new Animated.Value(0)).current;
   const pulseAnim = useRef(new Animated.Value(1)).current;
+  const isFocused = useIsFocused();
+  const [appStateActive, setAppStateActive] = useState(true);
 
-  // Animate scan line up/down
+  const { hasPermission, requestPermission } = useCameraPermission();
+  const device = useCameraDevice('back');
+  const isActive = isFocused && appStateActive && !scanned;
+
+  useEffect(() => {
+    if (!hasPermission) {
+      requestPermission();
+    }
+  }, [hasPermission, requestPermission]);
+
+  useEffect(() => {
+    const sub = AppState.addEventListener('change', (state) => {
+      setAppStateActive(state === 'active');
+    });
+    return () => sub.remove();
+  }, []);
+
   useEffect(() => {
     const loop = Animated.loop(
       Animated.sequence([
@@ -37,26 +69,24 @@ export default function QRScannerScreen() {
     );
     loop.start();
     return () => loop.stop();
-  }, []);
+  }, [scanLineAnim]);
 
-  const handleTapToScan = () => {
-    if (scanning || scanned) return;
-    setScanning(true);
+  const handleCodeScanned = useCallback(
+    (codes: any[]) => {
+      if (scannedRef.current || codes.length === 0) return;
+      const value: string | undefined = codes[0]?.value;
+      if (!value) return;
 
-    // Pulse animation
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(pulseAnim, { toValue: 1.08, duration: 300, useNativeDriver: true }),
-        Animated.timing(pulseAnim, { toValue: 1, duration: 300, useNativeDriver: true }),
-      ]),
-      { iterations: 3 },
-    ).start();
+      const result = parseUpiQR(value);
+      if (!result) return; // Not a UPI QR; ignore non-UPI codes silently
 
-    // Simulate scan after 1.5s
-    setTimeout(() => {
-      const result = MOCK_QR_RESULTS[Math.floor(Math.random() * MOCK_QR_RESULTS.length)];
+      scannedRef.current = true;
       setScanned(true);
-      setScanning(false);
+
+      Animated.sequence([
+        Animated.timing(pulseAnim, { toValue: 1.08, duration: 200, useNativeDriver: true }),
+        Animated.timing(pulseAnim, { toValue: 1, duration: 200, useNativeDriver: true }),
+      ]).start();
 
       setTimeout(() => {
         if (returnTo === 'SendMoney') {
@@ -65,85 +95,108 @@ export default function QRScannerScreen() {
           navigation.navigate('SendMoney', { prefillUpi: result.upi });
         }
       }, 600);
-    }, 1500);
-  };
+    },
+    [navigation, returnTo, pulseAnim],
+  );
+
+  const codeScanner = useCodeScanner({
+    codeTypes: ['qr'],
+    onCodeScanned: handleCodeScanned,
+  });
 
   const scanLineTranslate = scanLineAnim.interpolate({
     inputRange: [0, 1],
     outputRange: [-80, 80],
   });
 
+  if (!hasPermission) {
+    return (
+      <View style={[styles.container, styles.centered]}>
+        <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
+        <Icon name="camera-off" size={48} color={Colors.white} style={{ opacity: 0.5 }} />
+        <Text style={styles.permissionText}>Camera permission required to scan QR codes</Text>
+        <TouchableOpacity style={styles.permissionBtn} onPress={requestPermission}>
+          <Text style={styles.permissionBtnText}>Grant Permission</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  if (!device) {
+    return (
+      <View style={[styles.container, styles.centered]}>
+        <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
+        <Text style={styles.permissionText}>No camera found on this device</Text>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
 
-      {/* Top bar */}
-      <View style={styles.topBar}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.iconBtn}>
-          <Icon name="arrow-left" size={24} color={Colors.white} />
-        </TouchableOpacity>
-        <Text style={styles.title}>Scan & Pay</Text>
-        <TouchableOpacity
-          style={styles.iconBtn}
-          onPress={() => setTorchOn((t) => !t)}>
-          <Icon
-            name={torchOn ? 'flashlight' : 'flashlight-off'}
-            size={22}
-            color={torchOn ? Colors.primary : Colors.white}
-          />
-        </TouchableOpacity>
-      </View>
+      {/* Real device camera */}
+      <Camera
+        style={StyleSheet.absoluteFill}
+        device={device}
+        isActive={isActive}
+        codeScanner={codeScanner}
+        torch={torchOn ? 'on' : 'off'}
+      />
 
-      {/* Camera dark background */}
-      <TouchableOpacity
-        style={styles.camera}
-        activeOpacity={1}
-        onPress={handleTapToScan}>
-
-        {/* Scan frame */}
-        <Animated.View style={[styles.frame, scanned && styles.frameSuccess, { transform: [{ scale: pulseAnim }] }]}>
-          <View style={[styles.corner, styles.topLeft, scanned && styles.cornerSuccess]} />
-          <View style={[styles.corner, styles.topRight, scanned && styles.cornerSuccess]} />
-          <View style={[styles.corner, styles.bottomLeft, scanned && styles.cornerSuccess]} />
-          <View style={[styles.corner, styles.bottomRight, scanned && styles.cornerSuccess]} />
-
-          {/* Animated scan line */}
-          {!scanned && (
-            <Animated.View
-              style={[styles.scanLine, { transform: [{ translateY: scanLineTranslate }] }]}
+      {/* UI overlay */}
+      <View style={styles.overlay}>
+        {/* Top bar */}
+        <View style={styles.topBar}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.iconBtn}>
+            <Icon name="arrow-left" size={24} color={Colors.white} />
+          </TouchableOpacity>
+          <Text style={styles.title}>Scan & Pay</Text>
+          <TouchableOpacity style={styles.iconBtn} onPress={() => setTorchOn((t) => !t)}>
+            <Icon
+              name={torchOn ? 'flashlight' : 'flashlight-off'}
+              size={22}
+              color={torchOn ? Colors.primary : Colors.white}
             />
-          )}
-
-          {/* Success checkmark */}
-          {scanned && (
-            <View style={styles.successIcon}>
-              <Icon name="check" size={40} color={Colors.success} />
-            </View>
-          )}
-        </Animated.View>
-
-        {/* Status text inside camera area */}
-        <Text style={styles.tapHint}>
-          {scanned
-            ? 'QR Code Scanned!'
-            : scanning
-            ? 'Scanning...'
-            : 'Tap anywhere to simulate scan'}
-        </Text>
-      </TouchableOpacity>
-
-      {/* Bottom bar */}
-      <View style={styles.bottomBar}>
-        <Text style={styles.hint}>Align the QR code within the frame</Text>
-        <View style={styles.bottomActions}>
-          <TouchableOpacity style={styles.actionChip} onPress={handleTapToScan}>
-            <Icon name="lightning-bolt" size={16} color={Colors.white} />
-            <Text style={styles.actionChipText}>Tap to Scan (Mock)</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.actionChip}>
-            <Icon name="image-outline" size={16} color={Colors.white} />
-            <Text style={styles.actionChipText}>Gallery</Text>
-          </TouchableOpacity>
+        </View>
+
+        {/* Scan frame (centered over camera) */}
+        <View style={styles.cameraArea} pointerEvents="none">
+          <Animated.View
+            style={[styles.frame, scanned && styles.frameSuccess, { transform: [{ scale: pulseAnim }] }]}>
+            <View style={[styles.corner, styles.topLeft, scanned && styles.cornerSuccess]} />
+            <View style={[styles.corner, styles.topRight, scanned && styles.cornerSuccess]} />
+            <View style={[styles.corner, styles.bottomLeft, scanned && styles.cornerSuccess]} />
+            <View style={[styles.corner, styles.bottomRight, scanned && styles.cornerSuccess]} />
+
+            {!scanned && (
+              <Animated.View
+                style={[styles.scanLine, { transform: [{ translateY: scanLineTranslate }] }]}
+              />
+            )}
+
+            {scanned && (
+              <View style={styles.successIcon}>
+                <Icon name="check" size={40} color={Colors.success} />
+              </View>
+            )}
+          </Animated.View>
+
+          <Text style={styles.tapHint}>
+            {scanned ? 'QR Code Scanned!' : 'Point camera at a UPI QR code'}
+          </Text>
+        </View>
+
+        {/* Bottom bar */}
+        <View style={styles.bottomBar}>
+          <Text style={styles.hint}>Align the QR code within the frame</Text>
+          <View style={styles.bottomActions}>
+            <TouchableOpacity style={styles.actionChip}>
+              <Icon name="image-outline" size={16} color={Colors.white} />
+              <Text style={styles.actionChipText}>Gallery</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
     </View>
@@ -153,13 +206,10 @@ export default function QRScannerScreen() {
 const FRAME_SIZE = 220;
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#111' },
+  container: { flex: 1, backgroundColor: '#000' },
+  centered: { alignItems: 'center', justifyContent: 'center', gap: Spacing.base },
+  overlay: { flex: 1 },
   topBar: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    zIndex: 10,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -174,18 +224,16 @@ const styles = StyleSheet.create({
     fontWeight: Typography.weight.bold,
     color: Colors.white,
   },
-  camera: {
+  cameraArea: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#1a1a1a',
   },
   frame: {
     width: FRAME_SIZE,
     height: FRAME_SIZE,
     alignItems: 'center',
     justifyContent: 'center',
-    overflow: 'hidden',
   },
   frameSuccess: {},
   corner: {
@@ -223,7 +271,7 @@ const styles = StyleSheet.create({
   tapHint: {
     color: Colors.white,
     fontSize: Typography.size.sm,
-    opacity: 0.7,
+    opacity: 0.9,
     marginTop: Spacing.xl,
     textAlign: 'center',
   },
@@ -256,4 +304,22 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.1)',
   },
   actionChipText: { color: Colors.white, fontSize: Typography.size.xs },
+  permissionText: {
+    color: Colors.white,
+    fontSize: Typography.size.md,
+    textAlign: 'center',
+    paddingHorizontal: Spacing.xl,
+    opacity: 0.8,
+  },
+  permissionBtn: {
+    paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.xl,
+    backgroundColor: Colors.primary,
+    borderRadius: 8,
+  },
+  permissionBtnText: {
+    color: Colors.white,
+    fontSize: Typography.size.md,
+    fontWeight: Typography.weight.semibold,
+  },
 });

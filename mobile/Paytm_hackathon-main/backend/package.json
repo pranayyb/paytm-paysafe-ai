@@ -1,7 +1,0 @@
-{
-  "name": "paytm-voiceguard-backend",
-  "version": "2.0.0",
-  "scripts": {
-    "tunnel": "npx localtunnel --port 8000 --local-host 127.0.0.1 --subdomain paytm-voiceguard-new-25"
-  }
-}

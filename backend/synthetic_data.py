@@ -41,6 +41,13 @@ BANK_CODES = ["sbi", "icici", "okhdfcbank", "axis", "barodabank", "hdfc", "paytm
 SCAM_PATTERNS = ['electricity_scam', 'kyc_scam', 'lottery_scam', 'emergency_scam',
                   'refund_scam', 'fake_delivery', 'otp_scam', 'investment_scam']
 
+# Major Indian cities for merchant localities
+LOCALITIES = [
+    "Delhi", "Mumbai", "Bangalore", "Hyderabad", "Chennai", 
+    "Kolkata", "Pune", "Ahmedabad", "Jaipur", "Lucknow",
+    "Chandigarh", "Indore", "Surat", "Visakhapatnam", "Bhopal"
+]
+
 # Realistic transaction amount ranges by merchant category
 AMOUNT_RANGES = {
     "grocery": (20, 2000),
@@ -154,6 +161,7 @@ def generate_data():
         
         name = f"{first} {merchant_type}"
         category = random.choice(MERCHANT_CATEGORIES)
+        locality = random.choice(LOCALITIES)  # ✨ NEW: Add locality for benchmarking
         phone = f"+91{random.randint(8000000000, 9999999999)}"
         created_at = datetime(2025, 1, 1, tzinfo=timezone.utc) + timedelta(days=random.randint(0, 200))
         complaint_count = random.randint(0, 4)
@@ -164,6 +172,7 @@ def generate_data():
             upi_id=upi_id,
             name=name,
             category=category,
+            locality=locality,  # ✨ NEW: Store locality
             phone=phone,
             created_at=created_at,
             complaint_count=complaint_count
@@ -189,6 +198,7 @@ def generate_data():
             "upi_id": upi_id,
             "name": name,
             "category": category,
+            "locality": locality,  # ✨ NEW: Include in JSON export
             "phone": phone,
             "created_at": created_at.isoformat(),
             "complaint_count": complaint_count

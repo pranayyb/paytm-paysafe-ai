@@ -127,3 +127,61 @@ def list_merchants(db: Session = Depends(get_db)):
             for m in merchants
         ]
     }
+
+
+@router.get("/benchmarking/{merchant_upi_id}",
+            summary="🏆 WOW: Sector Benchmarking & Competitive Analysis",
+            description="""Compare your business against peers in your locality/sector.
+            
+Provides:
+- Your performance metrics (revenue, customers, transactions)
+- Peer merchant comparison (same category + locality)
+- Competitive ranking and percentiles
+- AI-powered improvement recommendations
+- Specific actions to outperform competitors
+
+This is your personal business advisor comparing you against the local competition!""")
+def get_sector_benchmarking(merchant_upi_id: str, db: Session = Depends(get_db)):
+    """
+    WOW FEATURE: Merchant Sector Benchmarking
+    Compares merchant against peers in same sector/locality and generates 
+    personalized improvement recommendations based on competitive analysis.
+    """
+    from services.merchant_benchmarking import get_sector_benchmarking_report
+    
+    report = get_sector_benchmarking_report(db, merchant_upi_id)
+    
+    if "error" in report:
+        raise HTTPException(status_code=404, detail=report["error"])
+    
+    return {
+        "merchant_name": report["merchant"]["merchant_name"],
+        "category": report["merchant"]["category"],
+        "locality": report["merchant"]["locality"],
+        "your_performance": {
+            "daily_revenue": report["merchant"]["daily_average_revenue"],
+            "transaction_count": report["merchant"]["transaction_count"],
+            "avg_transaction_value": report["merchant"]["avg_transaction_value"],
+            "repeat_customer_rate": f'{report["merchant"]["repeat_customer_rate"]}%',
+            "customer_complaints": report["merchant"]["complaint_count"],
+            "peak_hours": report["merchant"]["peak_hours"]
+        },
+        "sector_position": {
+            "overall_score": f'{report["competitive_position"]["percentile"]:.1f}/100',
+            "position": report["competitive_position"]["position"],
+            "peer_count": report["competitive_position"]["peer_count"],
+            "detailed_rankings": report["competitive_position"]["rankings"]
+        },
+        "top_performing_peers": [
+            {
+                "name": peer["merchant_name"],
+                "daily_revenue": peer["daily_average_revenue"],
+                "repeat_customer_rate": f'{peer["repeat_customer_rate"]}%',
+                "transactions": peer["transaction_count"]
+            }
+            for peer in report["peer_metrics"][:3]
+        ],
+        "ai_recommendations": report["recommendations"],
+        "report_generated": report["generated_at"]
+    }
+

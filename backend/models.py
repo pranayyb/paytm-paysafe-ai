@@ -23,6 +23,7 @@ class Merchant(Base):
     upi_id = Column(String, unique=True, index=True)
     name = Column(String)
     category = Column(String)
+    locality = Column(String, nullable=True)  # e.g., "Delhi", "Mumbai", "Bangalore"
     phone = Column(String)
     created_at = Column(DateTime(timezone=True), default=func.now())
     complaint_count = Column(Integer, default=0)

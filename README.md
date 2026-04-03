@@ -51,7 +51,23 @@ India processes **10+ billion UPI transactions monthly**, yet:
 
 ## 🧩 Features
 
-### 👤 USER SIDE — Guardian Angel for Every Payment
+### � Feature Overview
+
+**👤 User Side (Consumer Protection):**
+1. [🔴 Feature 1: Scam Shield (Pre-Payment AI)](#-feature-1-scam-shield-pre-payment-ai)
+2. [🟡 Feature 2: QR DNA Scanner](#-feature-2-qr-dna-scanner)
+3. [🔵 Feature 3: Live Trust Badge System](#-feature-3-live-trust-badge-system)
+4. [🎙️ Feature 4: Voice Payment with Safety Net](#️-feature-4-voice-payment-with-safety-net-bharat-feature)
+
+**🏪 Merchant Side (Business Growth):**
+5. [📊 Feature 5: WhatsApp Business Intelligence](#-feature-5-whatsapp-business-intelligence)
+6. [🎙️ Feature 6: Voice Business Assistant](#️-feature-6-voice-business-assistant)
+7. [🚨 Feature 7: Merchant Anomaly Alerts](#-feature-7-merchant-anomaly-alerts)
+8. [🏆 Feature 8: Sector Benchmarking & Competitive Analysis](#-feature-8-sector-benchmarking--competitive-analysis)
+
+---
+
+### �👤 USER SIDE — Guardian Angel for Every Payment
 
 ---
 
@@ -213,6 +229,115 @@ asking for refund. This matches a known scam
 pattern. Do NOT refund without verifying in 
 Paytm dashboard.
 ```
+
+---
+
+#### 🏆 Feature 8: Sector Benchmarking & Competitive Analysis
+
+**The Problem:** Merchants have no idea how well they're doing compared to competitors in their locality. They can't benchmark or improve strategically.
+
+**What it does:** Compare your business against peers in your sector + locality. Get detailed competitive analysis and AI-powered improvement recommendations.
+
+**How it works:**
+```
+1. System finds all merchants in your category (e.g. "grocery")
+   + same locality (e.g. "Delhi")
+
+2. Analyzes each peer's metrics:
+   - Daily revenue & transaction volume
+   - Average transaction value
+   - Customer retention (repeat rate)
+   - Peak hours & traffic patterns
+   - Complaint/trust rating
+
+3. Compares YOUR metrics vs peer averages:
+   - Shows percentile ranking (Are you top 20%? Bottom 40%?)
+   - Identifies performance gaps with specific numbers
+   - Highlights what successful peers are doing
+
+4. Gemini LLM generates personalized recommendations:
+   - "Your repeat customer rate is 30% vs peer avg 55%"
+   - → "Recommendation: Offer loyalty rewards on Saturdays 
+        when your traffic is 40% lower than peers"
+   - With estimated revenue impact
+```
+
+**Example Report:**
+```json
+{
+  "merchant_name": "Rahul Kirana Store",
+  "category": "grocery",
+  "locality": "Delhi",
+  
+  "your_performance": {
+    "daily_revenue": "₹12,400",
+    "transaction_count": 187,
+    "repeat_customer_rate": "32%",
+    "peak_hours": "8-10 AM, 6-8 PM"
+  },
+  
+  "sector_position": {
+    "overall_score": "42/100",
+    "position": "📈 Emerging - significant growth opportunity",
+    "peer_count": 8,
+    
+    "rankings": {
+      "daily_revenue": {
+        "your_value": 12400,
+        "peer_average": 18500,
+        "gap": -₹6,100 (-33%),
+        "percentile": 25.0,
+        "status": "📈 Room to grow"
+      },
+      "repeat_customer_rate": {
+        "your_value": "32%",
+        "peer_average": "58%",
+        "gap": "-26%",
+        "percentile": 12.5,
+        "status": "📈 Room to grow"
+      }
+    }
+  },
+  
+  "ai_recommendations": {
+    "title": "Improvement Strategy for Rahul Kirana Store",
+    "summary": "You're in bottom 25% for revenue - big opportunity!",
+    "recommendations": [
+      {
+        "title": "Weekend loyalty rewards (Hinglish: Hafte ke aakhri dinon mein discount!)",
+        "description": "Your Saturday transactions are 40% lower than peers. 
+                       Offer 5-10% discount or cashback on Saturdays to drive traffic.",
+        "expected_impact": "Saturdays revenue 15-20% increase = ₹2,500/week more",
+        "difficulty": "Easy",
+        "time_to_implement": "Immediate"
+      },
+      {
+        "title": "Build repeat customers (Regular customer loyalty program)",
+        "description": "Top peers have 58% repeat rate vs your 32%. 
+                       Track regular customers, remember their preferences.",
+        "expected_impact": "+₹4,000-6,000/month from better retention",
+        "difficulty": "Medium",
+        "time_to_implement": "This week"
+      }
+    ],
+    "priority_focus": "Fix Saturday traffic gap first - quickest revenue win",
+    "estimated_revenue_impact": "+₹15-20K/month if all implemented"
+  }
+}
+```
+
+**Tech Stack:**
+- Learns from actual transaction data (no guessing)
+- Compares 5-10 peer merchants automatically
+- Gemini LLM generates context-aware recommendations
+- Works for any merchant category + locality
+- Updates recommendations as business data changes
+
+**Why this is a game-changer:**
+- First-ever competitive intelligence for small merchants in India
+- Not just data, but **actionable recommendations** with revenue impact estimates
+- Merchants finally see: "I can earn ₹20K more if I do these 3 things"
+- Bridges knowledge gap between informal merchants and MBAs
 
 ---
 
@@ -546,6 +671,111 @@ Response:
 }
 ```
 
+#### 🏆 Sector Benchmarking & Competitive Analysis
+```
+GET /merchant/benchmarking/{merchant_upi_id}
+
+Example:
+GET /merchant/benchmarking/rahul_kirana_store@paytm
+
+Response:
+{
+  "merchant_name": "Rahul Kirana Store",
+  "category": "grocery",
+  "locality": "Delhi",
+  
+  "your_performance": {
+    "daily_revenue": 12400,
+    "transaction_count": 187,
+    "avg_transaction_value": 66.31,
+    "repeat_customer_rate": "32%",
+    "customer_complaints": 2,
+    "peak_hours": [
+      {"hour": 8, "transactions": 45},
+      {"hour": 7, "transactions": 42},
+      {"hour": 18, "transactions": 38}
+    ]
+  },
+  
+  "sector_position": {
+    "overall_score": "42.0/100",
+    "position": "📈 Emerging - significant growth opportunity",
+    "peer_count": 8,
+    "detailed_rankings": {
+      "daily_average_revenue": {
+        "name": "Daily Revenue",
+        "your_value": 12400,
+        "peer_average": 18500,
+        "gap": -6100,
+        "gap_percentage": -32.97,
+        "percentile": 25.0,
+        "status": "📈 Room to grow"
+      },
+      "repeat_customer_rate": {
+        "name": "Customer Retention %",
+        "your_value": 32,
+        "peer_average": 58,
+        "gap": -26,
+        "gap_percentage": -44.83,
+        "percentile": 12.5,
+        "status": "📈 Room to grow"
+      }
+    }
+  },
+  
+  "top_performing_peers": [
+    {
+      "name": "Vikram Grocery",
+      "daily_revenue": 28500,
+      "repeat_customer_rate": "68%",
+      "transactions": 387
+    },
+    {
+      "name": "Priya's Kirana",
+      "daily_revenue": 21200,
+      "repeat_customer_rate": "62%",
+      "transactions": 298
+    }
+  ],
+  
+  "ai_recommendations": {
+    "title": "Improvement Strategy for Rahul Kirana Store",
+    "summary": "You're in bottom 25% for revenue - big opportunity!",
+    "recommendations": [
+      {
+        "title": "Weekend loyalty rewards",
+        "description": "Your Saturday transactions are 40% lower than peers. 
+                       Offer 5-10% discount on Saturdays to drive traffic.",
+        "expected_impact": "Saturdays revenue +15-20% = ₹2,500/week more",
+        "difficulty": "Easy",
+        "time_to_implement": "Immediate"
+      },
+      {
+        "title": "Build repeat customers",
+        "description": "Top peers have 58% repeat rate vs your 32%. 
+                       Track regular customers, remember preferences.",
+        "expected_impact": "+₹4,000-6,000/month from retention",
+        "difficulty": "Medium",
+        "time_to_implement": "This week"
+      }
+    ],
+    "priority_focus": "Fix Saturday traffic gap first - quickest revenue win",
+    "estimated_revenue_impact": "+₹15-20K/month if all implemented"
+  },
+  
+  "report_generated": "2026-04-03T14:32:00Z"
+}
+```
+
+**Key Features:**
+- Automatically finds 5-10 peer merchants (same category + locality)
+- Calculates performance metrics: revenue, transactions, customer retention, peak hours
+- Shows percentile rankings (top 20%? bottom 40%?)
+- Compares against peer averages with gap analysis
+- Gemini LLM generates personalized, actionable recommendations
+- Each recommendation includes expected revenue impact and difficulty level
+- Works for any merchant category and locality as data grows
+
 ---
 
 ## 🎬 Demo Scenarios
@@ -585,6 +815,34 @@ Response:
    weekly revenue and comparison
 ```
 
+### Scenario 5: Merchant Sector Benchmarking
+```
+1. Merchant navigates to "Analyze Competition" section
+2. System automatically finds 8 peer grocery stores in Delhi
+3. DEMO MOMENT: Shows comparison dashboard:
+   
+   YOUR STORE (Rahul's Kirana):
+   - Daily revenue: ₹12,400 (📈 25th percentile)
+   - Repeat customers: 32% (📈 12th percentile)
+   - Peak hours: 8-10 AM
+   
+   BEST PERFORMER (Vikram's Grocery):
+   - Daily revenue: ₹28,500 (+₹16,100 vs you!)
+   - Repeat customers: 68% (+36% vs you!)
+   - Peak: 7-9 AM + 6-9 PM
+   
+4. AI RECOMMENDATIONS:
+   ✅ "Your Saturday sales 40% lower than peers"
+      → "Offer Saturday special discounts, expect +₹2,500/week"
+   ✅ "Repeat customers 36% below average"
+      → "Build loyalty program, expected +₹6K/month"
+   ✅ "Peak time 8 AM but Vikram peaks at 7-8 AM"
+      → "Open 30 min earlier to catch morning rush"
+   
+5. Merchant gets: "Do these 3 things → earn ₹20K more/month"
+   (specific, achievable, measurable impact)
+```
+
 ---
 
 ## 📊 Dataset & Data Generation
@@ -602,7 +860,9 @@ This creates:
 - `5% fraud rate` with known scam patterns
 - `UPI IDs` in format `name@paytm`
 - `Merchant categories`: kirana, medical, restaurant, auto, vegetables
+- `Merchant localities`: 15 major Indian cities (Delhi, Mumbai, Bangalore, etc.)
 - `Time distributions`: realistic peak hours (7-9 PM more transactions)
+- `Multiple merchants per locality`: enables peer comparison for benchmarking
 
 ### Scam database (hardcoded, no ML training needed):
 Located at `backend/data/scam_patterns.json` — 50+ known Indian scam scripts in Hindi and English.

@@ -410,52 +410,37 @@ Paytm dashboard.
 
 ## 📁 Project Structure
 
-```
-paysafe-ai/
-│
+```text
+.
+├── README.md                      # Project documentation
 ├── backend/
-│   ├── main.py                    # FastAPI app entry point
-│   ├── database.py                # DB setup + models
-│   ├── synthetic_data.py          # Generate fake transaction data
 │   ├── config.py                  # API keys, env variables
-│   │
-│   ├── services/
-│   │   ├── scam_shield.py         # LLM-based scam detection
-│   │   ├── trust_score.py         # Rule-based trust scoring
-│   │   ├── qr_scanner.py          # QR code analysis
-│   │   ├── voice.py               # Whisper STT + gTTS TTS
-│   │   ├── merchant_insights.py   # SQL analytics + LLM summary
-│   │   ├── whatsapp.py            # Twilio WhatsApp integration
-│   │   └── anomaly_detector.py    # Merchant fraud protection
-│   │
-│   ├── routes/
-│   │   ├── user_routes.py         # /scam, /trust, /voice, /qr
-│   │   └── merchant_routes.py     # /insights, /alerts, /voice-query
-│   │
-│   └── data/
-│       ├── scam_patterns.json     # Known Indian scam scripts
-│       └── sample_transactions.json # Pre-generated demo data
-│
-├── frontend/
-│   ├── src/
-│   │   ├── App.jsx
-│   │   ├── components/
-│   │   │   ├── ScamShield.jsx     # Paste message → get warning
-│   │   │   ├── TrustBadge.jsx     # Enter UPI ID → see badge
-│   │   │   ├── VoicePayment.jsx   # Voice recording + response
-│   │   │   └── MerchantDashboard.jsx
-│   │   └── api/
-│   │       └── client.js
-│   └── package.json
-│
+│   ├── data/                      # JSON data (merchants, users, feedback, etc.)
+│   ├── database.py                # DB setup + models
+│   ├── main.py                    # FastAPI app entry point
+│   ├── ml_models/                 # ML models for fraud detection
+│   ├── models.py                  # DB models
+│   ├── paysafe.db                 # SQLite database
+│   ├── requirements.txt           # Python dependencies
+│   ├── routes/                    # API endpoints
+│   ├── schemas.py                 # Pydantic schemas
+│   ├── services/                  # Core services (scam shield, trust score, etc.)
+│   └── synthetic_data.py          # Mock data generator
 ├── demo/
-│   ├── scenarios.md               # Step-by-step demo scripts
-│   ├── sample_scam_messages.txt   # Pre-loaded scam examples
-│   └── postman_collection.json    # API demo without frontend
-│
-├── .env.example                   # Environment variables template
-├── requirements.txt               # Python dependencies
-└── README.md
+│   └── scenarios.md               # Step-by-step demo scripts
+└── mobile/                        # React Native / Expo Mobile App
+    ├── App.tsx                    # Main app entry
+    ├── package.json               # Mobile dependencies
+    └── src/
+        ├── assets/                # Animations, images
+        ├── components/            # Reusable UI components
+        ├── config/                # Environment config
+        ├── navigation/            # Screen navigation configuration
+        ├── screens/               # UI screens (auth, home, merchant, payments)
+        ├── services/              # API connections to backend
+        ├── store/                 # Global state management
+        ├── theme/                 # Styling (colors, typography)
+        └── utils/                 # Helper functions
 ```
 
 ---

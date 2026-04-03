@@ -60,6 +60,7 @@ India processes **10+ billion UPI transactions monthly**, yet:
 4. [🎙️ Feature 4: Voice Payment with Safety Net](#️-feature-4-voice-payment-with-safety-net-bharat-feature)
 
 **🏪 Merchant Side (Business Growth):**
+
 5. [📊 Feature 5: WhatsApp Business Intelligence](#-feature-5-whatsapp-business-intelligence)
 6. [🎙️ Feature 6: Voice Business Assistant](#️-feature-6-voice-business-assistant)
 7. [🚨 Feature 7: Merchant Anomaly Alerts](#-feature-7-merchant-anomaly-alerts)

@@ -2,8 +2,6 @@
 
 > *"Ek AI jo aapke saath hota hai — har transaction mein, har fraud se pehle, har merchant ke growth mein."*
 
-Built for **Fin-O-Hack** | Paytm × ASSETS DTU Fintech Hackathon
-
 ---
 
 ## 📌 Table of Contents
@@ -17,10 +15,7 @@ Built for **Fin-O-Hack** | Paytm × ASSETS DTU Fintech Hackathon
 - [Setup & Installation](#-setup--installation)
 - [API Reference](#-api-reference)
 - [Demo Scenarios](#-demo-scenarios)
-- [Dataset & Data Generation](#-dataset--data-generation)
-- [3-Day Build Plan](#-3-day-build-plan)
 - [Deployment](#-deployment)
-- [Team](#-team)
 
 ---
 
@@ -65,7 +60,6 @@ India processes **10+ billion UPI transactions monthly**, yet:
 6. [🎙️ Feature 6: Voice Business Assistant](#️-feature-6-voice-business-assistant)
 7. [🚨 Feature 7: Merchant Anomaly Alerts](#-feature-7-merchant-anomaly-alerts)
 8. [🏆 Feature 8: Sector Benchmarking & Competitive Analysis](#-feature-8-sector-benchmarking--competitive-analysis)
-
 
 ---
 
@@ -847,78 +841,6 @@ Response:
 
 ---
 
-## 📊 Dataset & Data Generation
-
-**No real Paytm data is used or needed.** All data is synthetically generated.
-
-### Auto-generate on first run:
-```bash
-python backend/synthetic_data.py
-```
-
-This creates:
-- `1000 transactions` across 50 merchants, 200 users
-- `Realistic Indian names` (using Faker `en_IN` locale)
-- `5% fraud rate` with known scam patterns
-- `UPI IDs` in format `name@paytm`
-- `Merchant categories`: kirana, medical, restaurant, auto, vegetables
-- `Merchant localities`: 15 major Indian cities (Delhi, Mumbai, Bangalore, etc.)
-- `Time distributions`: realistic peak hours (7-9 PM more transactions)
-- `Multiple merchants per locality`: enables peer comparison for benchmarking
-
-### Scam database (hardcoded, no ML training needed):
-Located at `backend/data/scam_patterns.json` — 50+ known Indian scam scripts in Hindi and English.
-
-### ML Models Used:
-| Feature | Model Type | Training Needed? |
-|---|---|---|
-| Scam Shield | Gemini API | ❌ No — zero-shot |
-| Trust Badge | Rule-based scoring | ❌ No — pure logic |
-| QR Scanner | Rule-based | ❌ No — pure logic |
-| Voice STT | Whisper (pretrained) | ❌ No — pretrained |
-| Merchant Insights | SQL + LLM summary | ❌ No — SQL + prompts |
-| Anomaly Detection | Statistical rules | ❌ No — thresholds |
-
-**Bottom line: Zero ML training required for hackathon demo.**
-
----
-
-## 📅 3-Day Build Plan
-
-### Day 1 (6–8 hours) — Core Backend
-```
-✅ Hour 1-2: Project setup, FastAPI boilerplate, SQLite DB
-✅ Hour 3:   Synthetic data generation script
-✅ Hour 4:   Trust Score API (rule-based, works offline)
-✅ Hour 5:   Scam Shield API (LLM integration)
-✅ Hour 6:   QR Scanner API (rule-based)
-✅ Hour 7:   Merchant SQL analytics queries
-✅ Hour 8:   LLM summary for merchant insights
-```
-
-### Day 2 (6–8 hours) — Voice + WhatsApp + Frontend
-```
-✅ Hour 1-2: Whisper STT integration + gTTS response
-✅ Hour 3:   Voice payment full flow (parse → check → confirm)
-✅ Hour 4:   Twilio WhatsApp sandbox setup
-✅ Hour 5:   Hindi WhatsApp message templates
-✅ Hour 6:   Cron scheduler for daily reports
-✅ Hour 7:   React frontend — Scam Shield UI
-✅ Hour 8:   React frontend — Trust Badge + Merchant Dashboard
-```
-
-### Day 3 (4–6 hours) — Polish + Deploy + Demo Prep
-```
-✅ Hour 1:   Bug fixes + error handling
-✅ Hour 2:   Deploy backend to Railway.app
-✅ Hour 3:   Deploy frontend to Vercel
-✅ Hour 4:   Record demo video (backup)
-✅ Hour 5:   Rehearse 4 demo scenarios
-✅ Hour 6:   Final testing on live deployment
-```
-
----
-
 ## 🚀 Deployment
 
 ### Backend (Railway.app — Free)
@@ -951,31 +873,6 @@ npx vercel
 
 ---
 
-## 💰 Cost Estimate (Entire Hackathon)
-
-| Service | Free Tier | Estimated Usage |
-|---|---|---|
-| Google Gemini | Free tier | ~200 demo calls = free |
-| Twilio WhatsApp | 1000 free messages | ~20 for demo |
-| Railway | $5 free | Backend hosting |
-| Vercel | Unlimited free | Frontend hosting |
-| Supabase | 500MB free | DB storage |
-| Whisper | Completely free | Local STT |
-
-**Total estimated cost: ₹0–200**
-
----
-
-## ⚠️ Hackathon Scope & Constraints
-
-- Mock payment execution (no real UPI integration)
-- Simulated transaction data (no real Paytm DB access)
-- Simplified fraud rules (production would use graph ML)
-- Twilio sandbox for WhatsApp (not production API)
-- Voice works best in quiet environment for demo
-
----
-
 ## 🔮 Future Scope (Post-Hackathon)
 
 - Graph Neural Networks for fraud detection across UPI network
@@ -987,24 +884,3 @@ npx vercel
 
 ---
 
-## 👥 Team
-
-Built for **Fin-O-Hack** — Paytm × ASSETS DTU Fintech Hackathon 2026
-
-| Role | Focus |
-|---|---|
-| Backend Lead | FastAPI, LLM integration, APIs |
-| AI/ML Lead | Scam detection, trust scoring, voice |
-| Frontend Lead | React UI, demo flow |
-| Product Lead | Story, slides, presentation |
-
----
-
-## 📞 Contact Organizers
-
-- Hayyaan: 9560515054
-- Aahant: 8368830075
-
----
-
-*PaySafe AI — Transforming blind transactions into an intelligent, trusted ecosystem.*

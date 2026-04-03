@@ -65,6 +65,7 @@ India processes **10+ billion UPI transactions monthly**, yet:
 7. [🚨 Feature 7: Merchant Anomaly Alerts](#-feature-7-merchant-anomaly-alerts)
 8. [🏆 Feature 8: Sector Benchmarking & Competitive Analysis](#-feature-8-sector-benchmarking--competitive-analysis)
 
+
 ---
 
 ### �👤 USER SIDE — Guardian Angel for Every Payment

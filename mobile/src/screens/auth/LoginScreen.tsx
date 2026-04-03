@@ -17,7 +17,8 @@ const phoneSchema = z.object({
 });
 type PhoneForm = z.infer<typeof phoneSchema>;
 
-export default function LoginScreen({ navigation }: Props) {
+export default function LoginScreen({ navigation, route }: Props) {
+  const { mode } = route.params;
   const { control, handleSubmit, formState: { isValid } } = useForm<PhoneForm>({
     resolver: zodResolver(phoneSchema),
     defaultValues: { phone: '' },
@@ -25,7 +26,7 @@ export default function LoginScreen({ navigation }: Props) {
   });
 
   const handleSendOTP = (data: PhoneForm) => {
-    navigation.navigate('OTP', { phone: data.phone });
+    navigation.navigate('OTP', { phone: data.phone, mode });
   };
 
   return (

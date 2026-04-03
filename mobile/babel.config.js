@@ -14,6 +14,8 @@ module.exports = {
           '@utils': './src/utils',
           '@theme': './src/theme/index.ts',
           '@assets': './src/assets',
+          '@config': './src/config',
+          '@services': './src/services',
         },
       },
     ],

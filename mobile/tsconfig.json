@@ -11,7 +11,9 @@
       "@utils/*": ["src/utils/*"],
       "@theme": ["src/theme/index.ts"],
       "@theme/*": ["src/theme/*"],
-      "@assets/*": ["src/assets/*"]
+      "@assets/*": ["src/assets/*"],
+      "@config/*": ["src/config/*"],
+      "@services/*": ["src/services/*"]
     }
   },
   "include": ["**/*.ts", "**/*.tsx"],

@@ -19,7 +19,7 @@ type Props = NativeStackScreenProps<AuthStackParamList, 'OTP'>;
 const OTP_LENGTH = 6;
 
 export default function OTPScreen({ route }: Props) {
-  const { phone } = route.params;
+  const { phone, mode } = route.params;
   const [otp, setOtp] = useState<string[]>(Array(OTP_LENGTH).fill(''));
   const [resendTimer, setResendTimer] = useState(30);
   const inputs = useRef<Array<TextInput | null>>([]);
@@ -62,7 +62,7 @@ export default function OTPScreen({ route }: Props) {
       setLoading(true);
       setTimeout(() => {
         setLoading(false);
-        loginSuccess('mock-token-' + Date.now());
+        loginSuccess('mock-token-' + Date.now(), mode);
         // AppNavigator will switch to MainTabNavigator automatically
       }, 1200);
     }

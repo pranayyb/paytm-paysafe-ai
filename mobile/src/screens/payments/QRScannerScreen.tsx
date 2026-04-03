@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   StyleSheet, Text, View, TouchableOpacity,
-  StatusBar, Animated, AppState,
+  StatusBar, Animated, AppState, ActivityIndicator,
 } from 'react-native';
 import {
   Camera,
@@ -14,6 +14,7 @@ import { useNavigation, useRoute, useIsFocused } from '@react-navigation/native'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { HomeStackParamList } from '@navigation/types';
 import { Colors, Typography, Spacing } from '@theme';
+import { api } from '@services/api';
 
 function parseUpiQR(value: string): { upi: string; name: string } | null {
   try {
@@ -27,7 +28,7 @@ function parseUpiQR(value: string): { upi: string; name: string } | null {
     if (/^[\w.\-]+@[\w]+$/.test(value)) {
       return { upi: value, name: value };
     }
-  } catch {}
+  } catch { }
   return null;
 }
 
@@ -37,6 +38,7 @@ export default function QRScannerScreen() {
   const returnTo = (route.params as { returnTo?: string } | undefined)?.returnTo ?? 'Home';
   const [torchOn, setTorchOn] = useState(false);
   const [scanned, setScanned] = useState(false);
+  const [analyzing, setAnalyzing] = useState(false);
   const scannedRef = useRef(false);
   const scanLineAnim = useRef(new Animated.Value(0)).current;
   const pulseAnim = useRef(new Animated.Value(1)).current;
@@ -71,6 +73,30 @@ export default function QRScannerScreen() {
     return () => loop.stop();
   }, [scanLineAnim]);
 
+  const runSafetyCheck = useCallback(
+    async (rawValue: string, upi: string, name: string) => {
+      setAnalyzing(true);
+      try {
+        const analysisResult = await api.qr.scan(rawValue);
+        setAnalyzing(false);
+        // Because QRScanner can be accessed directly from MainTabNavigator (ScanTab), 
+        // we must route the navigation explicitly to the HomeTab stack which contains QRSafetyResult.
+        (navigation as any).navigate('HomeTab', {
+          screen: 'QRSafetyResult',
+          params: { upiId: upi, recipientName: name, analysisResult }
+        });
+      } catch {
+        setAnalyzing(false);
+        if (returnTo === 'SendMoney') {
+          navigation.replace('SendMoney', { prefillUpi: upi });
+        } else {
+          navigation.navigate('SendMoney', { prefillUpi: upi });
+        }
+      }
+    },
+    [navigation, returnTo],
+  );
+
   const handleCodeScanned = useCallback(
     (codes: any[]) => {
       if (scannedRef.current || codes.length === 0) return;
@@ -78,7 +104,7 @@ export default function QRScannerScreen() {
       if (!value) return;
 
       const result = parseUpiQR(value);
-      if (!result) return; // Not a UPI QR; ignore non-UPI codes silently
+      if (!result) return;
 
       scannedRef.current = true;
       setScanned(true);
@@ -88,15 +114,9 @@ export default function QRScannerScreen() {
         Animated.timing(pulseAnim, { toValue: 1, duration: 200, useNativeDriver: true }),
       ]).start();
 
-      setTimeout(() => {
-        if (returnTo === 'SendMoney') {
-          navigation.replace('SendMoney', { prefillUpi: result.upi });
-        } else {
-          navigation.navigate('SendMoney', { prefillUpi: result.upi });
-        }
-      }, 600);
+      runSafetyCheck(value, result.upi, result.name);
     },
-    [navigation, returnTo, pulseAnim],
+    [pulseAnim, runSafetyCheck],
   );
 
   const codeScanner = useCodeScanner({
@@ -184,8 +204,14 @@ export default function QRScannerScreen() {
           </Animated.View>
 
           <Text style={styles.tapHint}>
-            {scanned ? 'QR Code Scanned!' : 'Point camera at a UPI QR code'}
+            {analyzing ? 'Checking safety...' : scanned ? 'QR Code Scanned!' : 'Point camera at a UPI QR code'}
           </Text>
+          {analyzing && (
+            <View style={styles.analyzingRow}>
+              <ActivityIndicator size="small" color={Colors.primary} />
+              <Text style={styles.analyzingText}>AI safety analysis in progress</Text>
+            </View>
+          )}
         </View>
 
         {/* Bottom bar */}
@@ -321,5 +347,20 @@ const styles = StyleSheet.create({
     color: Colors.white,
     fontSize: Typography.size.md,
     fontWeight: Typography.weight.semibold,
+  },
+  analyzingRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+    marginTop: Spacing.sm,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    paddingHorizontal: Spacing.base,
+    paddingVertical: Spacing.xs,
+    borderRadius: 20,
+  },
+  analyzingText: {
+    color: Colors.white,
+    fontSize: Typography.size.xs,
+    opacity: 0.9,
   },
 });

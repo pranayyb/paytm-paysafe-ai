@@ -10,7 +10,7 @@ type Props = NativeStackScreenProps<AuthStackParamList, 'Splash'>;
 export default function SplashScreen({ navigation }: Props) {
   useEffect(() => {
     const timer = setTimeout(() => {
-      navigation.replace('Login');
+      navigation.replace('ModeSelect');
     }, 2500);
     return () => clearTimeout(timer);
   }, [navigation]);

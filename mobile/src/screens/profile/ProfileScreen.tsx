@@ -24,6 +24,7 @@ export default function ProfileScreen() {
   const { logout } = useAuthStore();
   const { name, email, avatarUri, kycStatus } = useUserStore();
   const phone = useAuthStore((s) => s.phone);
+  const mode = useAuthStore((s) => s.mode);
 
   const handleLogout = () => {
     Alert.alert('Logout', 'Are you sure you want to log out?', [
@@ -41,6 +42,21 @@ export default function ProfileScreen() {
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false}>
+        {/* Mode badge */}
+        <View style={[styles.modeBanner, mode === 'merchant' ? styles.modeBannerMerchant : styles.modeBannerUser]}>
+          <Icon
+            name={mode === 'merchant' ? 'store-outline' : 'wallet-outline'}
+            size={16}
+            color={Colors.white}
+          />
+          <Text style={styles.modeBannerText}>
+            {mode === 'merchant' ? 'Merchant Account' : 'Personal Account'}
+          </Text>
+          <TouchableOpacity onPress={logout} style={styles.switchModeBtn}>
+            <Text style={styles.switchModeText}>Switch Mode</Text>
+          </TouchableOpacity>
+        </View>
+
         {/* Profile card */}
         <View style={styles.profileCard}>
           <Avatar name={name} uri={avatarUri} size={72} />
@@ -139,4 +155,16 @@ const styles = StyleSheet.create({
   },
   logoutText: { fontSize: Typography.size.base, fontWeight: Typography.weight.semibold, color: Colors.error },
   versionText: { textAlign: 'center', fontSize: Typography.size.xs, color: Colors.textLight },
+  modeBanner: {
+    flexDirection: 'row', alignItems: 'center', gap: Spacing.sm,
+    paddingHorizontal: Spacing.base, paddingVertical: Spacing.sm,
+  },
+  modeBannerUser: { backgroundColor: Colors.primary },
+  modeBannerMerchant: { backgroundColor: Colors.primaryDark },
+  modeBannerText: { flex: 1, fontSize: Typography.size.sm, fontWeight: Typography.weight.semibold, color: Colors.white },
+  switchModeBtn: {
+    paddingHorizontal: Spacing.sm, paddingVertical: 3,
+    borderRadius: 20, borderWidth: 1, borderColor: 'rgba(255,255,255,0.5)',
+  },
+  switchModeText: { fontSize: Typography.size.xs, color: Colors.white, fontWeight: Typography.weight.medium },
 });

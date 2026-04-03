@@ -15,6 +15,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { HomeStackParamList } from '@navigation/types';
 import { Colors, Typography, Spacing } from '@theme';
 import { isValidUpiId, isValidAmount } from '@utils/validators';
+import TrustBadge from '@components/payments/TrustBadge';
 
 type Props = NativeStackScreenProps<HomeStackParamList, 'SendMoney'>;
 
@@ -77,6 +78,8 @@ export default function SendMoneyScreen({ navigation, route }: Props) {
                 <Icon name="check-circle" size={20} color={Colors.success} />
               )}
             </View>
+
+            {isValidUpiId(upi) && <TrustBadge upiId={upi} />}
 
             <Text style={styles.sectionTitle}>Recent Contacts</Text>
             <View style={styles.recentsRow}>

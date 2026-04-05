@@ -19,9 +19,8 @@ Complete API documentation for PaySafe AI with request/response JSON formats for
 {
   "message": "Dear Customer, Your account will be locked in 24 hours. Update your Aadhar & PAN immediately on www.bank-updated.com to avoid suspension. Click link: bit.ly/bankupd",
   "payment_context": {
-    "upi_id": "rajesh@paytm",
-    "recipient_name": "Random Shop",
-    "amount": null
+    "receiver_upi": "rajesh@paytm",
+    "amount": 250
   }
 }
 ```
@@ -29,30 +28,21 @@ Complete API documentation for PaySafe AI with request/response JSON formats for
 **Response:**
 ```json
 {
-  "risk_level": "critical",
   "is_scam": true,
-  "detected_patterns": [
+  "confidence": 95,
+  "scam_type": "kyc_scam",
+  "warning_hindi": "🚨 CRITICAL SCAM! यह KYC scam है। असली bank कभी SMS/email से Aadhar/PAN नहीं माँगता। Link पर click मत करो, अपनी जानकारी मत दो।",
+  "recommendation": "DO_NOT_PAY",
+  "analysis_mode": "llm",
+  "matched_patterns": [
     {
-      "pattern": "kyc_scam",
-      "name": "KYC Verification Scam",
-      "confidence": 0.95,
-      "keywords": ["aadhar", "pan", "account freeze", "urgent update"],
-      "severity": "critical"
+      "type": "kyc_scam",
+      "confidence": 95
     },
     {
-      "pattern": "phishing_scam",
-      "name": "Phishing & Malicious Links",
-      "confidence": 0.88,
-      "keywords": ["suspicious link", "bit.ly", "verify account"],
-      "severity": "critical"
+      "type": "phishing_scam",
+      "confidence": 88
     }
-  ],
-  "ai_explanation": "🚨 CRITICAL SCAM ALERT! यह KYC scam है। असली bank कभी SMS/email से Aadhar/PAN नहीं माँगता। Link पर click मत करो, अपनी जानकारी मत दो।",
-  "recommendation": "❌ DO NOT CLICK ANY LINKS. Ignore this message completely. Contact your bank directly using their official number.",
-  "actions": [
-    "Block the sender immediately",
-    "Report to NCRP: cybercrime.gov.in",
-    "Do NOT share personal details"
   ]
 }
 ```
@@ -127,18 +117,12 @@ GET /trust/amit.k@paytm
 ```json
 {
   "upi_id": "amit.k@paytm",
-  "name": "Amit Kumar",
   "trust_score": 92,
-  "badge": "verified_trusted",
-  "badge_color": "#4CAF50",
+  "badge": "✅ Verified Trusted",
+  "badge_color": "green",
   "account_age_days": 1824,
-  "account_age_label": "5 years",
-  "transaction_count": 487,
-  "complaint_count": 0,
-  "dispute_count": 0,
-  "profile_type": "trusted_veteran",
-  "risk_factors": [],
-  "recommendation": "✅ Safe to transact. Highly trusted user with excellent track record.",
+  "flags": [],
+  "explanation": "✅ Safe to transact. Highly trusted user with excellent track record.",
   "factors": {
     "account_age": {"score": 95, "label": "Excellent (5+ years)"},
     "transaction_history": {"score": 90, "label": "Strong (400+ transactions)"},
@@ -152,23 +136,16 @@ GET /trust/amit.k@paytm
 ```json
 {
   "upi_id": "suspicious123@ybl",
-  "name": "New User",
   "trust_score": 18,
-  "badge": "flagged_account",
-  "badge_color": "#F44336",
+  "badge": "🔴 High Risk",
+  "badge_color": "red",
   "account_age_days": 45,
-  "account_age_label": "1.5 months",
-  "transaction_count": 23,
-  "complaint_count": 5,
-  "dispute_count": 2,
-  "profile_type": "flagged_account",
-  "risk_factors": [
+  "flags": [
     "Very new account",
     "Multiple complaints filed",
-    "Disputed transactions",
-    "Low transaction volume"
+    "Disputed transactions"
   ],
-  "recommendation": "⚠️ HIGH RISK. Avoid this UPI ID. Multiple red flags detected.",
+  "explanation": "⚠️ HIGH RISK. Bahut zyada complaints ya bahut naya account! Payment se pehle verify karein.",
   "factors": {
     "account_age": {"score": 5, "label": "Very New (<2 months)"},
     "transaction_history": {"score": 20, "label": "Limited"},
@@ -192,9 +169,8 @@ GET /trust/amit.k@paytm
 {
   "qr_data": "upi://pay?pa=rajesh.chai@paytm&pn=Rajesh%20Chai&am=250&tn=Tea%20Payment",
   "user_location": {
-    "latitude": 28.7041,
-    "longitude": 77.1025,
-    "city": "Delhi"
+    "lat": 28.7041,
+    "lng": 77.1025
   }
 }
 ```
@@ -202,55 +178,64 @@ GET /trust/amit.k@paytm
 **Response (Safe QR):**
 ```json
 {
-  "status": "safe",
-  "upi_id": "rajesh.chai@paytm",
-  "recipient_name": "Rajesh Chai",
-  "parsed_amount": 250,
-  "risk_level": 1,
-  "risk_labels": ["green"],
-  "qr_analysis": {
-    "account_age_score": 95,
-    "account_age": "2.5 years",
-    "name_match": "HIGH",
+  "is_safe": true,
+  "risk_level": "LOW",
+  "risk_score": 5,
+  "badge": "✅ SAFE",
+  "checks": {
+    "account_age": {"passed": true, "detail": "Account 2.5 years purana"},
+    "name_match": {"passed": true, "detail": "Name verified: Rajesh Chai"},
+    "complaints": {"passed": true, "detail": "No complaints recorded"}
+  },
+  "reasons": [],
+  "explanation_hindi": "✅ सुरक्षित QR! यह एक विश्वसनीय व्यापारी है। आप सुरक्षित रूप से भुगतान कर सकते हैं।",
+  "qr_details": {
+    "upi_id": "rajesh.chai@paytm",
+    "name": "Rajesh Chai",
+    "amount": "250",
+    "currency": "INR"
+  },
+  "trust_data": {
+    "account_age_days": 912,
+    "transaction_count": 487,
     "complaint_count": 0,
     "dispute_count": 0,
-    "transaction_velocity_score": 85,
-    "location_match": "VERIFIED"
-  },
-  "merchant_info": {
-    "category": "food",
-    "locality": "South Delhi",
-    "profile": "established",
-    "monthly_revenue": "₹1,45,000"
-  },
-  "recommendation": "✅ Safe to pay. Established merchant with clean record."
+    "trust_badge": "verified_trusted"
+  }
 }
 ```
 
 **Response (Suspicious QR):**
 ```json
 {
-  "status": "suspicious",
-  "upi_id": "unknown.upi@bank",
-  "recipient_name": "Unknown",
-  "risk_level": 4,
-  "risk_labels": ["red", "account_mismatch", "location_anomaly"],
-  "qr_analysis": {
-    "account_age_score": 10,
-    "account_age": "2 days",
-    "name_match": "NO MATCH",
+  "is_safe": false,
+  "risk_level": "CRITICAL",
+  "risk_score": 85,
+  "badge": "🔴 FRAUD ALERT",
+  "checks": {
+    "account_age": {"passed": false, "detail": "Account sirf 2 din purana hai!"},
+    "name_match": {"passed": false, "detail": "Naam match nahi karta"},
+    "complaints": {"passed": false, "detail": "3 complaints registered"}
+  },
+  "reasons": [
+    "Account sirf 2 din purana — bahut naya",
+    "Naam match nahi karta",
+    "3 fraud complaints recorded"
+  ],
+  "explanation_hindi": "🚨 FRAUD ALERT! Ye QR code fraud jaisa lagta hai. Paise mat bhejo! Ye account naya hai aur complaints hain.",
+  "qr_details": {
+    "upi_id": "unknown.upi@bank",
+    "name": "Unknown",
+    "amount": null,
+    "currency": "INR"
+  },
+  "trust_data": {
+    "account_age_days": 2,
+    "transaction_count": 5,
     "complaint_count": 3,
     "dispute_count": 1,
-    "transaction_velocity_score": 15,
-    "location_match": "MISMATCH"
-  },
-  "recommendation": "⚠️ DO NOT PAY. Multiple fraud indicators detected.",
-  "alerts": [
-    "Very new account (2 days old)",
-    "Multiple complaints from other users",
-    "Location doesn't match merchant",
-    "Unusual transaction pattern"
-  ]
+    "trust_badge": "flagged_account"
+  }
 }
 ```
 
@@ -274,16 +259,22 @@ Content-Type: multipart/form-data
 **Response:**
 ```json
 {
-  "decoded_upi": "rajesh.chai@paytm",
-  "qr_scan_result": {
-    "status": "safe",
+  "decoded_data": "upi://pay?pa=rajesh.chai@paytm&pn=Rajesh%20Chai&am=250",
+  "is_safe": true,
+  "risk_level": "LOW",
+  "risk_score": 5,
+  "badge": "✅ SAFE",
+  "qr_details": {
     "upi_id": "rajesh.chai@paytm",
-    "recipient_name": "Rajesh Chai",
-    "risk_level": 1,
-    "recommendation": "✅ Safe QR. Verified merchant."
+    "name": "Rajesh Chai",
+    "amount": "250",
+    "currency": "INR"
   },
-  "image_processed": true,
-  "confidence": "high"
+  "trust_data": {
+    "account_age_days": 912,
+    "transaction_count": 487,
+    "trust_badge": "verified_trusted"
+  }
 }
 ```
 
@@ -309,25 +300,20 @@ Content-Type: multipart/form-data
 **Response:**
 ```json
 {
-  "status": "payment_initiated",
-  "transaction_id": 1042,
+  "status": "pending_confirmation",
+  "transcribed_text": "Rajesh ko 250 rupaye bhej do",
   "sender_upi": "amit.k@paytm",
   "sender_name": "Amit Kumar",
-  "recipient_upi": "rajesh.chai@paytm",
-  "recipient_name": "Rajesh Chai",
-  "amount": 250,
-  "extracted_details": {
-    "recipient_parsed": "Rajesh",
-    "amount_parsed": 250,
-    "confidence": 0.92
+  "transaction_id": 1042,
+  "pending_payment": {
+    "transaction_id": 1042,
+    "sender_upi": "amit.k@paytm",
+    "receiver_upi": "rajesh.chai@paytm",
+    "receiver_name": "Rajesh Chai",
+    "amount": 250
   },
-  "trust_check": {
-    "sender_status": "trusted",
-    "recipient_status": "safe",
-    "amount_reasonable": true
-  },
-  "message": "250 rupaye Rajesh Chai ko bhejne ke liye ready hain. Confirm karte ho?",
-  "next_step": "confirm_payment",
+  "response": "250 rupaye Rajesh Chai ko bhejne ke liye ready hain. Confirm karte ho?",
+  "message": "✅ Payment ready. Please confirm.",
   "voice_response_url": "/audio/response_1712345678.mp3"
 }
 ```
@@ -429,26 +415,18 @@ Content-Type: multipart/form-data
 ```json
 {
   "url": "https://www.bank-verify-aadhar.com/secure/login.php?id=567&redirect=paytm",
-  "fraud_prediction": 1,
-  "fraud_probability": 0.94,
-  "risk_level": "critical",
-  "confidence_score": 94,
-  "verdict": "🚨 FRAUDULENT URL DETECTED",
-  "detailed_analysis": {
-    "tld_suspicious": true,
-    "ip_reputation": "blacklisted",
-    "domain_age": "3 days",
-    "ssl_certificate": "invalid",
-    "url_entropy": 8.2,
-    "phishing_keywords": ["verify", "aadhar", "secure", "login", "bank"],
-    "redirect_detected": true
-  },
-  "recommendation": "❌ DO NOT CLICK. This is a phishing attempt. Block the sender.",
-  "actions": [
-    "Report to cybercrime.gov.in",
-    "Block sender",
-    "Change your passwords"
-  ]
+  "is_fraud": true,
+  "confidence": 94,
+  "risk_level": "High",
+  "risk_factors": [
+    "Suspicious TLD (.com domain with bank keywords)",
+    "Phishing keywords detected: verify, aadhar, secure, login",
+    "URL entropy abnormally high",
+    "Redirect parameters detected",
+    "Domain age suspicious (3 days old)"
+  ],
+  "analysis_mode": "ml",
+  "warning_hindi": "🚨 PHISHING ALERT! Ye URL phishing jaisa lagta hai. Aadhar/bank details enter mat karna. Report karo cybercrime.gov.in par."
 }
 ```
 
@@ -456,12 +434,12 @@ Content-Type: multipart/form-data
 ```json
 {
   "url": "https://www.paytm.com/payment/checkout",
-  "fraud_prediction": 0,
-  "fraud_probability": 0.02,
-  "risk_level": "safe",
-  "confidence_score": 98,
-  "verdict": "✅ LEGITIMATE URL",
-  "recommendation": "Safe to click."
+  "is_fraud": false,
+  "confidence": 98,
+  "risk_level": "Safe",
+  "risk_factors": [],
+  "analysis_mode": "ml",
+  "warning_hindi": null
 }
 ```
 

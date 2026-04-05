@@ -1,0 +1,42 @@
+[
+  {
+    "scenario": "rapid_repeat_upi",
+    "transaction_id": 4001,
+    "timestamp": "2026-04-05T10:50:13.352188+00:00"
+  },
+  {
+    "scenario": "rapid_repeat_upi",
+    "transaction_id": 4002,
+    "timestamp": "2026-04-05T10:56:13.352188+00:00"
+  },
+  {
+    "scenario": "rapid_repeat_upi",
+    "transaction_id": 4003,
+    "timestamp": "2026-04-05T11:02:13.352188+00:00"
+  },
+  {
+    "scenario": "rapid_repeat_upi",
+    "transaction_id": 4004,
+    "timestamp": "2026-04-05T11:08:13.352188+00:00"
+  },
+  {
+    "scenario": "rapid_repeat_upi",
+    "transaction_id": 4005,
+    "timestamp": "2026-04-05T11:14:13.352188+00:00"
+  },
+  {
+    "scenario": "rapid_repeat_upi",
+    "transaction_id": 4006,
+    "timestamp": "2026-04-05T11:20:13.352188+00:00"
+  },
+  {
+    "scenario": "rapid_repeat_upi",
+    "transaction_id": 4007,
+    "timestamp": "2026-04-05T11:26:13.352188+00:00"
+  },
+  {
+    "scenario": "unusual_amount",
+    "transaction_id": 4008,
+    "timestamp": "2026-04-05T23:42:13.352188+00:00"
+  }
+]

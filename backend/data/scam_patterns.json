@@ -11,104 +11,284 @@
       "disconnect",
       "payment"
     ],
-    "risk_level": "high"
+    "risk_level": "high",
+    "typical_amount": "500-5000",
+    "target_segments": [
+      "middle_class",
+      "business_owners"
+    ]
   },
   {
     "id": 2,
     "pattern": "kyc_scam",
     "name": "KYC Verification Scam",
-    "description": "Requests for KYC/personal details under false pretense",
+    "description": "Requests for KYC/personal details claiming account freeze/upgrade",
     "keywords": [
       "kyc",
       "verification",
       "update",
       "aadhar",
-      "pan"
+      "pan",
+      "freeze"
     ],
-    "risk_level": "critical"
+    "risk_level": "critical",
+    "typical_amount": "0-100",
+    "target_segments": [
+      "elderly",
+      "less_tech_savvy"
+    ],
+    "prevention": "Banks never ask for KYC details via UPI/messaging"
   },
   {
     "id": 3,
     "pattern": "lottery_scam",
     "name": "Lottery/Prize Scam",
-    "description": "Fake lottery winnings or prize claims",
+    "description": "Fake lottery winnings or prize claims requiring confirmation payment",
     "keywords": [
       "lottery",
       "prize",
       "won",
-      "lottery",
-      "congratulations"
+      "congratulations",
+      "claim"
     ],
-    "risk_level": "high"
+    "risk_level": "high",
+    "typical_amount": "1000-15000",
+    "target_segments": [
+      "gullible",
+      "reward_seekers"
+    ]
   },
   {
     "id": 4,
     "pattern": "emergency_scam",
     "name": "Emergency Money Scam",
-    "description": "Urgent money requests claiming emergency situations",
+    "description": "Urgent money requests claiming accident/hospital emergency",
     "keywords": [
       "emergency",
       "urgent",
       "accident",
       "hospital",
-      "police"
+      "police",
+      "bail"
     ],
-    "risk_level": "critical"
+    "risk_level": "critical",
+    "typical_amount": "5000-50000",
+    "target_segments": [
+      "parents",
+      "family_oriented"
+    ]
   },
   {
     "id": 5,
     "pattern": "refund_scam",
     "name": "Refund Scam",
-    "description": "Fake refunds from banks or online platforms",
+    "description": "Fake refunds from banks or e-commerce claiming payment reversal",
     "keywords": [
       "refund",
       "revert",
       "cashback",
       "payment failed",
-      "reverse"
+      "reverse",
+      "credit"
     ],
-    "risk_level": "high"
+    "risk_level": "high",
+    "typical_amount": "100-10000",
+    "target_segments": [
+      "online_shoppers",
+      "regular_users"
+    ]
   },
   {
     "id": 6,
     "pattern": "fake_delivery",
     "name": "Fake Delivery Scam",
-    "description": "Fraudulent delivery or order confirmation messages",
+    "description": "Fake delivery/order confirmation asking to click malicious link/OTP",
     "keywords": [
       "delivery",
       "order",
       "package",
       "otp",
-      "track"
+      "track",
+      "confirm"
     ],
-    "risk_level": "medium"
+    "risk_level": "medium",
+    "typical_amount": "200-3000",
+    "target_segments": [
+      "e_commerce_users"
+    ]
   },
   {
     "id": 7,
     "pattern": "otp_scam",
     "name": "OTP/PIN Phishing",
-    "description": "Attempts to obtain OTP or PIN codes",
+    "description": "Attempts to obtain OTP or PIN codes through social engineering",
     "keywords": [
       "otp",
       "pin",
       "security",
       "confirm",
-      "verify"
+      "verify",
+      "authenticate"
     ],
-    "risk_level": "critical"
+    "risk_level": "critical",
+    "typical_amount": "1-500",
+    "target_segments": [
+      "everyone"
+    ],
+    "prevention": "Never share OTP, PIN, or passwords with anyone"
   },
   {
     "id": 8,
     "pattern": "investment_scam",
     "name": "Investment Scam",
-    "description": "Fake investment opportunities with guaranteed returns",
+    "description": "Fake investment opportunities promising high guaranteed returns",
     "keywords": [
       "investment",
       "returns",
       "profit",
       "fast money",
-      "guaranteed"
+      "guaranteed",
+      "assured"
     ],
-    "risk_level": "high"
+    "risk_level": "high",
+    "typical_amount": "10000-100000",
+    "target_segments": [
+      "wealth_seekers",
+      "retirees"
+    ]
+  },
+  {
+    "id": 9,
+    "pattern": "romance_scam",
+    "name": "Romance/Relationship Scam",
+    "description": "Building fake relationships to extract money for emergencies or travel",
+    "keywords": [
+      "friend",
+      "help",
+      "travel",
+      "visa",
+      "meeting",
+      "emergency"
+    ],
+    "risk_level": "high",
+    "typical_amount": "500-20000",
+    "target_segments": [
+      "lonely",
+      "seeking_relationships"
+    ],
+    "prevention": "Be cautious if someone you just met asks for money"
+  },
+  {
+    "id": 10,
+    "pattern": "job_scam",
+    "name": "Fake Job Scam",
+    "description": "Offering lucrative job requiring upfront payment for training/processing",
+    "keywords": [
+      "job",
+      "training",
+      "placement",
+      "fee",
+      "work_from_home"
+    ],
+    "risk_level": "high",
+    "typical_amount": "1000-30000",
+    "target_segments": [
+      "job_seekers",
+      "students"
+    ]
+  },
+  {
+    "id": 11,
+    "pattern": "phishing_scam",
+    "name": "Phishing & Malicious Links",
+    "description": "Links/QR codes that steal banking credentials or install malware",
+    "keywords": [
+      "click",
+      "link",
+      "download",
+      "app",
+      "qr",
+      "update"
+    ],
+    "risk_level": "critical",
+    "typical_amount": "variable",
+    "target_segments": [
+      "everyone"
+    ],
+    "prevention": "Never click links from unknown sources; verify URLs"
+  },
+  {
+    "id": 12,
+    "pattern": "qr_code_fraud",
+    "name": "Malicious QR Code Fraud",
+    "description": "Fake QR codes at shops redirecting payments to fraudulent accounts",
+    "keywords": [
+      "qr",
+      "scan",
+      "payment",
+      "shop",
+      "replace"
+    ],
+    "risk_level": "medium",
+    "typical_amount": "100-5000",
+    "target_segments": [
+      "merchant_customers"
+    ],
+    "prevention": "Verify QR codes with merchants before scanning"
+  },
+  {
+    "id": 13,
+    "pattern": "impersonation_scam",
+    "name": "Government/Authority Impersonation",
+    "description": "Posing as tax officials, police, or government demanding payment",
+    "keywords": [
+      "tax",
+      "income",
+      "fine",
+      "penalty",
+      "warrant",
+      "arrest"
+    ],
+    "risk_level": "critical",
+    "typical_amount": "5000-100000",
+    "target_segments": [
+      "business_owners",
+      "high_earners"
+    ]
+  },
+  {
+    "id": 14,
+    "pattern": "duplicate_transaction",
+    "name": "Duplicate Transaction Fraud",
+    "description": "Charging same transaction multiple times within short period",
+    "keywords": [
+      "duplicate",
+      "repeat",
+      "charged",
+      "multiple"
+    ],
+    "risk_level": "medium",
+    "typical_amount": "50-10000",
+    "target_segments": [
+      "online_users"
+    ],
+    "prevention": "Check transaction history immediately after payment"
+  },
+  {
+    "id": 15,
+    "pattern": "unusual_location",
+    "name": "Geolocation Mismatch",
+    "description": "Transactions from impossible locations in quick succession",
+    "keywords": [
+      "location",
+      "different_city",
+      "suspicious_location"
+    ],
+    "risk_level": "high",
+    "typical_amount": "variable",
+    "target_segments": [
+      "frequent_travelers"
+    ],
+    "prevention": "Enable location alerts and verify unexpected transfers"
   }
 ]

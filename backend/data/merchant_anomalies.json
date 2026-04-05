@@ -1,0 +1,31 @@
+[
+  {
+    "merchant_id": "aisha_sweets_shop557@ybl",
+    "merchant_name": "Aisha Sweets Shop",
+    "has_anomalies": true,
+    "anomalies": [
+      {
+        "type": "Unusual Transaction Amount",
+        "description": "Transaction of \u20b92,40,000 at 11:42 PM is 15x your average evening transaction (avg: \u20b916,000).",
+        "severity": "HIGH",
+        "timestamp": "2026-04-05T09:50:13.352188+00:00",
+        "amount": 240000,
+        "pattern": "amount_spike"
+      },
+      {
+        "type": "Rapid Repeat UPI",
+        "description": "7 transactions from arif.r@okhdfcbank within 45 mins (6-min intervals) \u2014 possible test fraud or account compromise.",
+        "severity": "MEDIUM",
+        "timestamp": "2026-04-05T10:50:13.352188+00:00",
+        "pattern": "rapid_repeat_upi"
+      },
+      {
+        "type": "Off-Peak Activity Spike",
+        "description": "Unusual 23 transactions between 2-4 AM (typically only 1-2 transactions in these hours).",
+        "severity": "MEDIUM",
+        "timestamp": "2026-04-05T08:50:13.352188+00:00",
+        "pattern": "unusual_time"
+      }
+    ]
+  }
+]
